@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "lilys_vanilla",
+	"version": "${version}",
+	"name": "Lily's Vanilla",
+	"description": "In-world interactions!",
+	"authors": [
+		"gayasslily"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/lilys_vanilla/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.lilys_vanilla.LilysVanilla"
+		],
+		"client": [
+			"com.lilys_vanilla.LilysVanillaClient"
+		],
+		"fabric-datagen": [
+			"com.lilys_vanilla.LilysVanillaDataGenerator"
+		]
+	},
+	"mixins": [
+		"lilys_vanilla.mixins.json",
+		{
+			"config": "lilys_vanilla.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
