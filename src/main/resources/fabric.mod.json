@@ -22,7 +22,7 @@
 			"com.lilys_vanilla.LilysVanillaClient"
 		],
 		"fabric-datagen": [
-			"com.lilys_vanilla.ModDataGenerator"
+			"com.lilys_vanilla.LilysVanillaDataGenerator"
 		]
 	},
 	"mixins": [

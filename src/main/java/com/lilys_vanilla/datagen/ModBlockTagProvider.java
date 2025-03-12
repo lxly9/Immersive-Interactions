@@ -24,6 +24,9 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         getOrCreateTagBuilder(WEATHERABLE_ITEMS)
-                .add(Blocks.COPPER_BLOCK);
+                .add(Blocks.COPPER_BLOCK)
+                .add(Blocks.EXPOSED_COPPER)
+                .add(Blocks.WEATHERED_COPPER)
+                .add(Blocks.OXIDIZED_COPPER);
     }
 }

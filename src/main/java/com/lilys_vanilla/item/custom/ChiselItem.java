@@ -1,6 +1,5 @@
 package com.lilys_vanilla.item.custom;
 
-import com.google.common.base.Suppliers;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
@@ -11,10 +10,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class ChiselItem extends Item {
     private static final Map<Block, Block> CHISEL_MAP =

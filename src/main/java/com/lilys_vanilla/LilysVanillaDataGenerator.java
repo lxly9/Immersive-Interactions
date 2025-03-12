@@ -1,5 +1,6 @@
 package com.lilys_vanilla;
 
+import com.lilys_vanilla.datagen.ModBlockTagProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -19,17 +20,6 @@ public class LilysVanillaDataGenerator implements DataGeneratorEntrypoint {
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		FabricDataGenerator.Pack pack = generator.createPack();
 
-		pack.addProvider(MyTagGenerator::new);
-	}
-
-	private static class MyTagGenerator extends FabricTagProvider.ItemTagProvider {
-		public MyTagGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
-			super(output, completableFuture);
-		}
-
-		@Override
-		protected void configure(RegistryWrapper.WrapperLookup arg) {
-
-		}
+		pack.addProvider(ModBlockTagProvider::new);
 	}
 }
