@@ -1,5 +1,6 @@
 package com.lilys_vanilla.item.custom;
 
+import com.google.common.base.Suppliers;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
@@ -13,6 +14,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ChiselItem extends Item {
     private static final Map<Block, Block> CHISEL_MAP =
@@ -24,6 +26,8 @@ public class ChiselItem extends Item {
     public ChiselItem(Settings settings) {
         super(settings);
     }
+
+    //public static final Supplier<Map<Block, Block>> REVERSE_CHISEL_MAP = Suppliers.memoize(() -> ((Map)CHISEL_MAP.get()).inverse());
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
@@ -38,6 +42,9 @@ public class ChiselItem extends Item {
                 item -> context.getPlayer().sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
 
                 world.playSound(null, context.getBlockPos(), SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
+            }
+            else {
+
             }
         }
 

@@ -1,6 +1,5 @@
-package com.lilys_vanilla.util;
+package com.lilys_vanilla;
 
-import com.lilys_vanilla.LilysVanilla;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
@@ -10,6 +9,7 @@ import net.minecraft.util.Identifier;
 public class ModTags {
     public static class Blocks {
         public static final TagKey<Block> CHISELABLE_BLOCKS = createTag("chiselable_blocks");
+        public static final TagKey<Block> WEATHERABLE_BLOCKS = createTag("weatherable_blocks");
 
         private static TagKey<Block> createTag(String name) {
             return TagKey.of(RegistryKeys.BLOCK, Identifier.of(LilysVanilla.MOD_ID, name));
