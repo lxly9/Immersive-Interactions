@@ -35,8 +35,9 @@ public class PatinaItem extends Item {
                 world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS);
                 world.syncWorldEvent(WorldEvents.BLOCK_SCRAPED, pos, 0);
             }
-            return ActionResult.;
+            return ActionResult.success(oxidationLevel.ordinal() < 3);
+        }else {
+            return super.useOnBlock(context);
         }
-        return ActionResult.PASS;
     }
 }
