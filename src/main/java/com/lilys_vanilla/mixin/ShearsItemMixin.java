@@ -1,6 +1,7 @@
 package com.lilys_vanilla.mixin;
 
 import com.lilys_vanilla.datagen.ModBlockTagProvider;
+import com.lilys_vanilla.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
@@ -34,7 +35,7 @@ public class ShearsItemMixin {
         Block block = state.getBlock();
         String blockIdString = Registries.BLOCK.getId(block).toString();
 
-        if (!world.isClient && state.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS)) {
+        if (!world.isClient && state.isIn(ModBlockTagProvider.MOSSY_BLOCKS)) {
             String newBlockId = blockIdString.replace("mossy_", "");
             Block newBlock = Registries.BLOCK.get(Identifier.of(newBlockId));
 
@@ -47,10 +48,10 @@ public class ShearsItemMixin {
                 }
 
                 world.setBlockState(pos, newState);
-                world.playSound(null, pos, SoundEvents.BLOCK_GRASS_BREAK, SoundCategory.BLOCKS);
+                world.playSound(null, pos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS);
                 context.getStack().damage(1, ((ServerWorld) world), ((ServerPlayerEntity) context.getPlayer()),
                         item -> context.getPlayer().sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
-                Block.dropStack(world, pos, new ItemStack(Items.MOSS_CARPET));
+                Block.dropStack(world, pos, new ItemStack(ModItems.MOSS_CLUMP));
 
                 cir.setReturnValue(ActionResult.SUCCESS);
             }
