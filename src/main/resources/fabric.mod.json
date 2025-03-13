@@ -2,8 +2,8 @@
 	"schemaVersion": 1,
 	"id": "lilys_vanilla",
 	"version": "${version}",
-	"name": "Lily's Vanilla",
-	"description": "In-world interactions!",
+	"name": "Lily's Vanilla: Reduced Variants",
+	"description": "Reduced variants through in-world interactions!",
 	"authors": [
 		"gayasslily"
 	],

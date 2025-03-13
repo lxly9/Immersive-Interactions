@@ -6,7 +6,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -27,19 +29,17 @@ public class AxeItemMixin {
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         PlayerEntity player = context.getPlayer();
+        Block block = state.getBlock();
+        Identifier blockId = Registries.BLOCK.getId(block);
+        String blockIdString = blockId.toString();
+
 
         if (!world.isClient && state.getBlock() instanceof Oxidizable && player != null) {
             Oxidizable oxidizable = (Oxidizable) state.getBlock();
             Oxidizable.OxidationLevel oxidationLevel = oxidizable.getDegradationLevel();
 
-            if (oxidationLevel.ordinal() > 0) {
-                if (!player.isCreative()) {
-                    Vec3d blockCenter = pos.toCenterPos();
-                    Vec3d playerPos = player.getPos();
-                    Vec3d direction = playerPos.subtract(blockCenter).normalize().multiply(0.55);
-                    Vec3d dropPos = blockCenter.add(direction);
-                    Block.dropStack(world, BlockPos.ofFloored(dropPos), new ItemStack(ModItems.COPPER_PATINA));
-                }
+            if (!player.isCreative() && !blockIdString.contains("waxed") && oxidationLevel.ordinal() > 0)  {
+                Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
             }
         }
     }

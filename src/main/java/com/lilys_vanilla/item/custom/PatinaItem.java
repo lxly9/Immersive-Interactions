@@ -29,13 +29,14 @@ public class PatinaItem extends Item {
 
             if (oxidationLevel.ordinal() < Oxidizable.OxidationLevel.values().length - 1) {
                 BlockState nextState = oxidizable.getDegradationResult(state).orElse(state);
+
                 world.setBlockState(pos, nextState);
                 context.getStack().decrement(1);
-                world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS);
+                world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS);
                 world.syncWorldEvent(WorldEvents.BLOCK_SCRAPED, pos, 0);
             }
+            return ActionResult.;
         }
-
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 }
