@@ -28,7 +28,7 @@
 	"mixins": [
 		"immersive_interactions.mixins.json",
 		{
-			"config": "lilys_vanilla.client.mixins.json",
+			"config": "immersive_interactions.client.mixins.json",
 			"environment": "client"
 		}
 	],
