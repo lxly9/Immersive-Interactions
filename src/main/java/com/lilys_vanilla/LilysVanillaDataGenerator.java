@@ -1,6 +1,7 @@
 package com.lilys_vanilla;
 
 import com.lilys_vanilla.datagen.ModBlockTagProvider;
+import com.lilys_vanilla.datagen.ModItemTagProvider;
 import com.lilys_vanilla.datagen.ModModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -23,5 +24,6 @@ public class LilysVanillaDataGenerator implements DataGeneratorEntrypoint {
 
 		pack.addProvider(ModBlockTagProvider::new);
 		pack.addProvider(ModModelProvider::new);
+		pack.addProvider(ModItemTagProvider::new);
 	}
 }

@@ -5,6 +5,7 @@
   "mixins": [
     "AxeItemMixin",
     "ExampleMixin",
+    "ItemMixin",
     "ShearsItemMixin"
   ],
   "injectors": {

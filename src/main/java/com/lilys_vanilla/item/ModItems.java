@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 public class ModItems {
     public static final Item COPPER_PATINA = registerItem("copper_patina", new PatinaItem(new Item.Settings()));
     public static final Item CHISEL = registerItem("chisel", new ChiselItem(new Item.Settings().maxDamage(128)));
-    public static final Item MOSS_CLUMP = registerItem("moss_clump", new MossItem(new Item.Settings()));
+    public static final Item MOSS_CLUMP = registerItem("moss_clump", new Item(new Item.Settings()));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(LilysVanilla.MOD_ID, name), item);
