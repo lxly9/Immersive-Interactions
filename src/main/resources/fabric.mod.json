@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "lilys_vanilla",
+	"id": "immersive_interactions",
 	"version": "${version}",
-	"name": "Lily's Vanilla: Reduced Variants",
+	"name": "Lily's Vanilla: Immersive Interactions",
 	"description": "Reduced variants through in-world interactions!",
 	"authors": [
 		"gayasslily"
@@ -12,21 +12,21 @@
 		"sources": ""
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/lilys_vanilla/icon.png",
+	"icon": "assets/immersive_interactions/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.lilys_vanilla.LilysVanilla"
+			"com.immersive_interactions.ImmersiveInteractions"
 		],
 		"client": [
-			"com.lilys_vanilla.LilysVanillaClient"
+			"com.immersive_interactions.ImmersiveInteractionsClient"
 		],
 		"fabric-datagen": [
-			"com.lilys_vanilla.LilysVanillaDataGenerator"
+			"com.immersive_interactions.ImmersiveInteractionsDataGenerator"
 		]
 	},
 	"mixins": [
-		"lilys_vanilla.mixins.json",
+		"immersive_interactions.mixins.json",
 		{
 			"config": "lilys_vanilla.client.mixins.json",
 			"environment": "client"

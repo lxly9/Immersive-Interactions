@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.lilys_vanilla.mixin.client",
+	"package": "com.immersive_interactions.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"ExampleClientMixin"
