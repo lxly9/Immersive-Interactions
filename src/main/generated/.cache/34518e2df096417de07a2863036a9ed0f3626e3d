@@ -1,5 +1,5 @@
-// 1.21.1	2025-03-14T16:03:20.7756176	Lily's Vanilla: Immersive Interactions/Tags for minecraft:item
+// 1.21.1	2025-03-15T22:45:09.2155505	Lily's Vanilla: Immersive Interactions/Tags for minecraft:item
 105727dc444ddc319293c250e6c64f197b4ba151 data\immersive_interactions\tags\item\can_apply_slime.json
 bde6ca31173d1f22d5f6fe355dc90c9faa35b239 data\immersive_interactions\tags\item\can_apply_amethyst.json
-7e0c7fcd2ddc40b7d5b0c59070144efa448e2acf data\immersive_interactions\tags\item\can_apply_moss.json
 0b4e9eb2e57b7d0790ad2a0344733be5de39a297 data\immersive_interactions\tags\item\can_repair_brick.json
+7e0c7fcd2ddc40b7d5b0c59070144efa448e2acf data\immersive_interactions\tags\item\can_apply_moss.json
