@@ -202,44 +202,6 @@ public class ItemMixin {
                     return ActionResult.success(state.isIn(ModBlockTagProvider.CHISELED_BLOCKS));
                 }
             }
-            if (itemStack.getItem() instanceof DyeItem) {
-                LOGGER.info("gay");
-                if (state.isIn(ConventionalBlockTags.DYED))
-                {
-                    Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
-                    if (newBlock != null) {
-                        BlockState newState = newBlock.getDefaultState();
-                        for (Property<?> property : state.getProperties()) {
-                            if (newState.contains(property)) {
-                                newState = copyProperty(newState, state, property);
-                            }
-                        }
-
-
-                        world.setBlockState(pos, newState);
-                        world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
-                    }
-                    return ActionResult.success(state.isIn(ConventionalBlockTags.DYED));
-                } else if (state.isIn(ModBlockTagProvider.DYEABLE_BASE_BLOCKS)){
-                    Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
-                    if (newBlock != null) {
-                        BlockState newState = newBlock.getDefaultState();
-                        for (Property<?> property : state.getProperties()) {
-                            if (newState.contains(property)) {
-                                newState = copyProperty(newState, state, property);
-                            }
-                        }
-
-
-                        world.setBlockState(pos, newState);
-                        world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
-                    }
-                    return ActionResult.success(state.isIn(ModBlockTagProvider.DYEABLE_BASE_BLOCKS));
-
-                }
-            }
         }
         return original.call(context);
     }
