@@ -6,12 +6,14 @@ import com.immersive_interactions.item.ModItems;
 import com.immersive_interactions.item.custom.ChiselItem;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -198,6 +200,44 @@ public class ItemMixin {
                                 item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                     }
                     return ActionResult.success(state.isIn(ModBlockTagProvider.CHISELED_BLOCKS));
+                }
+            }
+            if (itemStack.getItem() instanceof DyeItem) {
+                LOGGER.info("gay");
+                if (state.isIn(ConventionalBlockTags.DYED))
+                {
+                    Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
+                    if (newBlock != null) {
+                        BlockState newState = newBlock.getDefaultState();
+                        for (Property<?> property : state.getProperties()) {
+                            if (newState.contains(property)) {
+                                newState = copyProperty(newState, state, property);
+                            }
+                        }
+
+
+                        world.setBlockState(pos, newState);
+                        world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS);
+                        context.getStack().decrement(1);
+                    }
+                    return ActionResult.success(state.isIn(ConventionalBlockTags.DYED));
+                } else if (state.isIn(ModBlockTagProvider.DYEABLE_BASE_BLOCKS)){
+                    Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
+                    if (newBlock != null) {
+                        BlockState newState = newBlock.getDefaultState();
+                        for (Property<?> property : state.getProperties()) {
+                            if (newState.contains(property)) {
+                                newState = copyProperty(newState, state, property);
+                            }
+                        }
+
+
+                        world.setBlockState(pos, newState);
+                        world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS);
+                        context.getStack().decrement(1);
+                    }
+                    return ActionResult.success(state.isIn(ModBlockTagProvider.DYEABLE_BASE_BLOCKS));
+
                 }
             }
         }

@@ -132,17 +132,5 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(Blocks.GLASS_PANE)
                 .add(Blocks.WHITE_CANDLE)
                 .add(Blocks.WHITE_CANDLE);
-
-        getOrCreateTagBuilder(DYED_BLOCKS)
-                .add(Blocks.RED_BED)
-                .add(Blocks.RED_WOOL)
-                .add(Blocks.RED_CARPET)
-                .add(Blocks.RED_TERRACOTTA)
-                .add(Blocks.RED_CONCRETE)
-                .add(Blocks.RED_CONCRETE_POWDER)
-                .add(Blocks.RED_GLAZED_TERRACOTTA)
-                .add(Blocks.RED_STAINED_GLASS)
-                .add(Blocks.RED_STAINED_GLASS_PANE)
-                .add(Blocks.RED_CANDLE);
     }
 }
