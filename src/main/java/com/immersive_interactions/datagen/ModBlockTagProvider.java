@@ -2,11 +2,13 @@ package com.immersive_interactions.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
@@ -29,7 +31,8 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public static final TagKey<Block> AMETHYST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "amethyst_blocks"));
     public static final TagKey<Block> DYEABLE_BASE_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "dyeable_base_blocks"));
     public static final TagKey<Block> DYED_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "dyed_blocks"));
-    
+    public static final TagKey<Block> BARK_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "bark_blocks"));
+
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         getOrCreateTagBuilder(CHISELABLE_BLOCKS)
@@ -132,5 +135,10 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(Blocks.GLASS_PANE)
                 .add(Blocks.WHITE_CANDLE)
                 .add(Blocks.WHITE_CANDLE);
+
+        getOrCreateTagBuilder(BARK_BLOCKS)
+                .add(Blocks.OAK_LOG)
+                .add(Blocks.OAK_WOOD)
+                ;
     }
 }

@@ -22,6 +22,7 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
     public static final TagKey<Item> CAN_APPLY_MOSS = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_moss"));
     public static final TagKey<Item> CAN_APPLY_SLIME = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_slime"));
     public static final TagKey<Item> CAN_APPLY_AMETHYST = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_amethyst"));
+    public static final TagKey<Item> CAN_APPLY_BARK = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_bark"));
 
 
     @Override

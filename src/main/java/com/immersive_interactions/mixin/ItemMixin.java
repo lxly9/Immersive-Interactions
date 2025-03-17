@@ -6,7 +6,6 @@ import com.immersive_interactions.item.ModItems;
 import com.immersive_interactions.item.custom.ChiselItem;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
@@ -31,7 +30,7 @@ import java.util.Objects;
 
 import static com.immersive_interactions.util.BlockTransformationHelper.copyProperty;
 import static com.immersive_interactions.util.BlockTransformationHelper.findBestMatch;
-import static com.immersive_interactions.util.DyeMatcher.dyedBlockMatcher;
+import static com.immersive_interactions.util.WoodTransformationHelper.transformLogToWood;
 
 @Mixin(Item.class)
 public class ItemMixin {
@@ -120,9 +119,7 @@ public class ItemMixin {
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
 
-                        // Only copy the facing property and avoid copying the extended state
                         for (Property<?> property : state.getProperties()) {
-                            // Only copy the facing property, and avoid the extended property
                             if (property == PistonBlock.FACING && newState.contains(property)) {
                                 newState = copyProperty(newState, state, property);
                             }
@@ -132,7 +129,6 @@ public class ItemMixin {
                         world.playSound(null, pos, SoundEvents.BLOCK_SLIME_BLOCK_HIT, SoundCategory.BLOCKS);
                         context.getStack().decrement(1);
                     }
-                    return ActionResult.success(state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS));
                 } else {
                     Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS);
                     if (newBlock != null) {
@@ -166,8 +162,25 @@ public class ItemMixin {
                     }
                 return ActionResult.success(state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS));
             }
+            if (state.isIn(BlockTags.LOGS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_BARK)) {
+                    Block newBlock = transformLogToWood(blockIdString);
+                    String clickedWood = block.toString();
+                    if (newBlock != null) {
+                        BlockState newState = newBlock.getDefaultState();
+                        for (Property<?> property : state.getProperties()) {
+                            if (newState.contains(property)) {
+                                newState = copyProperty(newState, state, property);
+                            }
+                        }
+
+                        world.setBlockState(pos, newState);
+                        world.playSound(null, pos, SoundEvents.BLOCK_WOOD_HIT, SoundCategory.BLOCKS);
+                        context.getStack().decrement(1);
+                    }
+                return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
+            }
             if (itemStack.getItem() instanceof ChiselItem) {
-                if (state.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS)) {
+                if (state.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS) )  {
                     Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CHISELED_BLOCKS);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
