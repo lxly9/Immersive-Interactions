@@ -1,9 +1,7 @@
 package com.immersive_interactions.mixin;
 
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;

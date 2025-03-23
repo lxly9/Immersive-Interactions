@@ -26,7 +26,7 @@ public class WaxedBrushItem extends Item implements SignChangingItem {
         World world = context.getWorld();
         BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
-        return (ActionResult)getWaxedState(blockState).map((state) -> {
+        return getWaxedState(blockState).map((state) -> {
             PlayerEntity playerEntity = context.getPlayer();
             ItemStack itemStack = context.getStack();
             if (playerEntity instanceof ServerPlayerEntity) {
@@ -44,7 +44,7 @@ public class WaxedBrushItem extends Item implements SignChangingItem {
     }
     public boolean useOnSign(World world, SignBlockEntity signBlockEntity, boolean front, PlayerEntity player) {
         if (signBlockEntity.setWaxed(true)) {
-            world.syncWorldEvent((PlayerEntity)null, 3003, signBlockEntity.getPos(), 0);
+            world.syncWorldEvent(null, 3003, signBlockEntity.getPos(), 0);
             return true;
         } else {
             return false;

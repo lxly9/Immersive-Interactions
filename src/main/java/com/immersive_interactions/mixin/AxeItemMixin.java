@@ -34,8 +34,7 @@ public class AxeItemMixin {
         String blockIdString = blockId.toString();
 
 
-        if (!world.isClient && state.getBlock() instanceof Oxidizable && player != null) {
-            Oxidizable oxidizable = (Oxidizable) state.getBlock();
+        if (!world.isClient && state.getBlock() instanceof Oxidizable oxidizable && player != null) {
             Oxidizable.OxidationLevel oxidationLevel = oxidizable.getDegradationLevel();
 
             if (!player.isCreative() && !blockIdString.contains("waxed") && oxidationLevel.ordinal() > 0)  {
