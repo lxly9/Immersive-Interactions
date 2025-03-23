@@ -6,6 +6,7 @@
     "AxeItemMixin",
     "BoatEntityMixin",
     "ChestBoatItemMixin",
+    "VehicleEntityMixin",
     "ItemMixin",
     "MinecartEntityMixin"
   ],
