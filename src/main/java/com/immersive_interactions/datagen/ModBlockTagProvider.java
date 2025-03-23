@@ -31,7 +31,6 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public static final TagKey<Block> AMETHYST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "amethyst_blocks"));
     public static final TagKey<Block> DYEABLE_BASE_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "dyeable_base_blocks"));
     public static final TagKey<Block> DYED_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "dyed_blocks"));
-    public static final TagKey<Block> BARK_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "bark_blocks"));
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
@@ -135,10 +134,5 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(Blocks.GLASS_PANE)
                 .add(Blocks.WHITE_CANDLE)
                 .add(Blocks.WHITE_CANDLE);
-
-        getOrCreateTagBuilder(BARK_BLOCKS)
-                .add(Blocks.OAK_LOG)
-                .add(Blocks.OAK_WOOD)
-                ;
     }
 }

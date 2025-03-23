@@ -21,6 +21,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,6 +47,7 @@ public class ItemMixin {
         String blockIdString = Registries.BLOCK.getId(block).toString();
 
         if (!world.isClient){
+            ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
             if (itemStack.getItem() instanceof PickaxeItem && state.isIn(ModBlockTagProvider.CRACKABLE_BLOCKS)) {
                     Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CRACKED_BLOCKS);
                     if (newBlock != null) {
@@ -61,6 +63,7 @@ public class ItemMixin {
                         context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(),
                                 item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                     }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.CRACKABLE_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.CRACKED_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK)) {
@@ -77,6 +80,7 @@ public class ItemMixin {
                         world.playSound(null, pos, SoundEvents.BLOCK_MUD_STEP, SoundCategory.BLOCKS);
                         context.getStack().decrement(1);
                     }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.CRACKED_BLOCKS));
             }
             if (itemStack.getItem() instanceof ShearsItem && state.isIn(ModBlockTagProvider.MOSSY_BLOCKS)) {
@@ -95,6 +99,7 @@ public class ItemMixin {
                         context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(),
                                 item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                     }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.MOSSY_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS)) {
@@ -111,6 +116,7 @@ public class ItemMixin {
                         world.playSound(null, pos, SoundEvents.BLOCK_MOSS_HIT, SoundCategory.BLOCKS);
                         context.getStack().decrement(1);
                     }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_SLIME)) {
@@ -144,6 +150,7 @@ public class ItemMixin {
                         context.getStack().decrement(1);
                     }
                 }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
@@ -160,6 +167,7 @@ public class ItemMixin {
                         world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS);
                         context.getStack().decrement(1);
                     }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS));
             }
             if (state.isIn(BlockTags.LOGS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_BARK)) {
@@ -177,6 +185,7 @@ public class ItemMixin {
                         world.playSound(null, pos, SoundEvents.BLOCK_WOOD_HIT, SoundCategory.BLOCKS);
                         context.getStack().decrement(1);
                     }
+                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
             }
             if (itemStack.getItem() instanceof ChiselItem) {
@@ -195,6 +204,7 @@ public class ItemMixin {
                         context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(),
                                 item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                     }
+                    world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                     return ActionResult.success(state.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS));
 
                 } else if (state.isIn(ModBlockTagProvider.CHISELED_BLOCKS)) {
@@ -212,6 +222,7 @@ public class ItemMixin {
                         context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(),
                                 item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                     }
+                    world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                     return ActionResult.success(state.isIn(ModBlockTagProvider.CHISELED_BLOCKS));
                 }
             }

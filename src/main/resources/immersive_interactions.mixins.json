@@ -4,7 +4,10 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AxeItemMixin",
-    "ItemMixin"
+    "BoatEntityMixin",
+    "ChestBoatItemMixin",
+    "ItemMixin",
+    "MinecartEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

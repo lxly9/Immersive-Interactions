@@ -22,5 +22,7 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.register(ModItems.CHISEL, Models.GENERATED);
         itemModelGenerator.register(ModItems.COPPER_PATINA, Models.GENERATED);
         itemModelGenerator.register(ModItems.MOSS_CLUMP, Models.GENERATED);
+        itemModelGenerator.register(ModItems.BARK, Models.GENERATED);
+        itemModelGenerator.register(ModItems.WAXED_BRUSH, Models.GENERATED);
     }
 }

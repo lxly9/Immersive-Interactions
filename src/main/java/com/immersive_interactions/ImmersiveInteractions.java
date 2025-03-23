@@ -2,7 +2,6 @@ package com.immersive_interactions;
 
 import com.immersive_interactions.item.ModItems;
 import net.fabricmc.api.ModInitializer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

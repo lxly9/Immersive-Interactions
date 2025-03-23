@@ -7,6 +7,7 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -39,6 +40,24 @@ public class AxeItemMixin {
 
             if (!player.isCreative() && !blockIdString.contains("waxed") && oxidationLevel.ordinal() > 0)  {
                 Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
+            }
+        }
+    }
+    @Inject(method = "useOnBlock", at = @At("HEAD"))
+    private void injectStripping(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
+        World world = context.getWorld();
+        BlockPos pos = context.getBlockPos();
+        BlockState state = world.getBlockState(pos);
+        PlayerEntity player = context.getPlayer();
+        Block block = state.getBlock();
+        Identifier blockId = Registries.BLOCK.getId(block);
+        String blockIdString = blockId.toString();
+
+
+        if (!world.isClient && state.isIn(BlockTags.LOGS) && player != null) {
+
+            if (!player.isCreative() && !blockIdString.contains("stripped"))  {
+                Block.dropStack(world, pos, new ItemStack(ModItems.BARK));
             }
         }
     }
