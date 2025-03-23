@@ -2,8 +2,6 @@ package com.immersive_interactions.item.custom;
 
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -16,9 +14,7 @@ import net.minecraft.world.event.GameEvent;
 
 import java.util.Objects;
 
-import static net.minecraft.item.HoneycombItem.getWaxedState;
-
-public class WaxedBrushItem extends Item implements SignChangingItem {
+public class WaxedBrushItem extends HoneycombItem  {
     public WaxedBrushItem(Settings settings) {
         super(settings);
     }
@@ -41,17 +37,5 @@ public class WaxedBrushItem extends Item implements SignChangingItem {
             world.syncWorldEvent(playerEntity, 3003, blockPos, 0);
             return ActionResult.success(world.isClient);
         }).orElse(ActionResult.PASS);
-    }
-    public boolean useOnSign(World world, SignBlockEntity signBlockEntity, boolean front, PlayerEntity player) {
-        if (signBlockEntity.setWaxed(true)) {
-            world.syncWorldEvent(null, 3003, signBlockEntity.getPos(), 0);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean canUseOnSignText(SignText signText, PlayerEntity player) {
-        return true;
     }
 }

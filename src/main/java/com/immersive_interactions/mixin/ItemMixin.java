@@ -23,9 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 import java.util.Objects;
 
@@ -78,7 +76,7 @@ public class ItemMixin {
 
                         world.setBlockState(pos, newState);
                         world.playSound(null, pos, SoundEvents.BLOCK_MUD_STEP, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
+                        context.getStack().decrementUnlessCreative(1, player);
                     }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.CRACKED_BLOCKS));
@@ -114,7 +112,7 @@ public class ItemMixin {
 
                         world.setBlockState(pos, newState);
                         world.playSound(null, pos, SoundEvents.BLOCK_MOSS_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
+                        context.getStack().decrementUnlessCreative(1, player);
                     }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS));
@@ -133,7 +131,7 @@ public class ItemMixin {
 
                         world.setBlockState(pos, newState);
                         world.playSound(null, pos, SoundEvents.BLOCK_SLIME_BLOCK_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
+                        context.getStack().decrementUnlessCreative(1, player);
                     }
                 } else {
                     Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS);
@@ -147,7 +145,7 @@ public class ItemMixin {
 
                         world.setBlockState(pos, newState);
                         world.playSound(null, pos, SoundEvents.BLOCK_SLIME_BLOCK_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
+                        context.getStack().decrementUnlessCreative(1, player);
                     }
                 }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
@@ -165,7 +163,7 @@ public class ItemMixin {
 
                         world.setBlockState(pos, newState);
                         world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
+                        context.getStack().decrementUnlessCreative(1, player);
                     }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS));
@@ -183,7 +181,7 @@ public class ItemMixin {
 
                         world.setBlockState(pos, newState);
                         world.playSound(null, pos, SoundEvents.BLOCK_WOOD_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrement(1);
+                        context.getStack().decrementUnlessCreative(1, player);
                     }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));

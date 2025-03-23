@@ -3,12 +3,13 @@
   "package": "com.immersive_interactions.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractSignBlockMixin",
     "AxeItemMixin",
     "BoatEntityMixin",
     "ChestBoatItemMixin",
-    "VehicleEntityMixin",
     "ItemMixin",
-    "MinecartEntityMixin"
+    "MinecartEntityMixin",
+    "VehicleEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
