@@ -17,7 +17,7 @@ public class ModItems {
     public static final Item CHISEL = registerItem("chisel", new ChiselItem(new Item.Settings().maxDamage(128)));
     public static final Item MOSS_CLUMP = registerItem("moss_clump", new Item(new Item.Settings()));
     public static final Item BARK = registerItem("bark", new Item(new Item.Settings()));
-    public static final Item WAXED_BRUSH = registerItem("waxed_brush", new WaxedBrushItem(new Item.Settings().maxDamage(128).recipeRemainder(Items.BRUSH)));
+    public static final Item WAXED_BRUSH = registerItem("waxed_brush", new WaxedBrushItem(new Item.Settings().maxDamage(48).recipeRemainder(Items.BRUSH)));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(ImmersiveInteractions.MOD_ID, name), item);
