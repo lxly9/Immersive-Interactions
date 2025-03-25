@@ -1,9 +1,6 @@
 package com.immersive_interactions;
 
-import com.immersive_interactions.datagen.ModBlockTagProvider;
-import com.immersive_interactions.datagen.ModItemTagProvider;
-import com.immersive_interactions.datagen.ModLootTableProvider;
-import com.immersive_interactions.datagen.ModModelProvider;
+import com.immersive_interactions.datagen.*;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
@@ -17,5 +14,6 @@ public class ImmersiveInteractionsDataGenerator implements DataGeneratorEntrypoi
 		pack.addProvider(ModModelProvider::new);
 		pack.addProvider(ModItemTagProvider::new);
 		pack.addProvider(ModLootTableProvider::new);
+		pack.addProvider(ModRecipeProvider::new);
 	}
 }

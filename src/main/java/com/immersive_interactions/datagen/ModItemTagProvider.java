@@ -39,5 +39,8 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         getOrCreateTagBuilder(CAN_APPLY_AMETHYST)
                 .add(Items.AMETHYST_SHARD);
+
+        getOrCreateTagBuilder(CAN_APPLY_BARK)
+                .add(ModItems.BARK);
     }
 }
