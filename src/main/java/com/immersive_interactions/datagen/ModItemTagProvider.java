@@ -26,6 +26,7 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
     public static final TagKey<Item> CAN_APPLY_SLIME = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_slime"));
     public static final TagKey<Item> CAN_APPLY_AMETHYST = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_amethyst"));
     public static final TagKey<Item> CAN_APPLY_BARK = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_apply_bark"));
+    public static final TagKey<Item> CAN_WAX_COPPER = TagKey.of(RegistryKeys.ITEM, Identifier.of("immersive_interactions", "can_wax_copper"));
 
 
     @Override
@@ -46,5 +47,9 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         getOrCreateTagBuilder(CAN_APPLY_BARK)
                 .add(ModItems.BARK);
+
+        getOrCreateTagBuilder(CAN_WAX_COPPER)
+                .add(ModItems.WAXED_BRUSH)
+                .add(Items.HONEYCOMB);
     }
 }

@@ -4,8 +4,10 @@ import com.immersive_interactions.datagen.ModBlockTagProvider;
 import com.immersive_interactions.datagen.ModItemTagProvider;
 import com.immersive_interactions.item.ModItems;
 import com.immersive_interactions.item.custom.ChiselItem;
+import com.immersive_interactions.item.custom.PatinaItem;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
@@ -35,13 +37,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.Objects;
 
+import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
 import static com.immersive_interactions.util.BlockTransformationHelper.copyProperty;
 import static com.immersive_interactions.util.BlockTransformationHelper.findBestMatch;
+import static com.immersive_interactions.util.DyeMatcher.dyedBlockMatcher;
+import static com.immersive_interactions.util.DyeTransformationHelper.findDyeMatch;
 import static com.immersive_interactions.util.WoodTransformationHelper.transformLogToWood;
 
 @Mixin(Item.class)
-public class ItemMixin {
+public abstract class ItemMixin {
     @Shadow @Final private static Logger LOGGER;
+
+    @Shadow public abstract Item asItem();
 
     @WrapMethod(method = "useOnBlock")
     private ActionResult mod_id$useOnBlock(ItemUsageContext context, Operation<ActionResult> original) {
@@ -196,6 +203,25 @@ public class ItemMixin {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
             }
+            if (state.isIn(ConventionalBlockTags.DYED) && itemStack.getItem() instanceof DyeItem) {
+                Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
+                BlockState newState = newBlock.getDefaultState();
+                String dyeColor = itemStack.getItem().toString().replace("dye", "");
+
+                for (Property<?> property : state.getProperties()) {
+                    if (newState.contains(property)) {
+                        newState = copyProperty(newState, state, property);
+                    }
+                }
+
+                if (!state.toString().contains(dyeColor)) {
+                    world.setBlockState(pos, newState);
+                    world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS);
+                    context.getStack().decrementUnlessCreative(1, player);
+                    world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
+                    return ActionResult.success(state.isIn(ConventionalBlockTags.DYED));
+                }
+            }
             if (itemStack.getItem() instanceof ChiselItem) {
                 if (state.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS) )  {
                     Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CHISELED_BLOCKS);
@@ -246,17 +272,59 @@ public class ItemMixin {
         if (stack.isIn(ModItemTagProvider.CAN_APPLY_MOSS)) {
             tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_moss").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
         }
-        else if (stack.isIn(ModItemTagProvider.CAN_APPLY_BARK) || stack.isOf(barkFD)) {
+        if (stack.isIn(ModItemTagProvider.CAN_APPLY_BARK) || stack.isOf(barkFD)) {
             tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_bark").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
         }
-        else if (stack.isIn(ModItemTagProvider.CAN_APPLY_SLIME)) {
+        if (stack.isIn(ModItemTagProvider.CAN_APPLY_SLIME)) {
             tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_slime").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
         }
-        else if (stack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
+        if (stack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
             tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_amethyst").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
         }
-        else if (stack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK)) {
+        if (stack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK)) {
             tooltip.add(Text.translatable("tag.item.immersive_interactions.can_repair_brick").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        if (stack.isIn(ModItemTagProvider.CAN_WAX_COPPER)) {
+            if (!isModLoaded("waxed_workstations")) {
+                tooltip.add(Text.translatable("tag.item.immersive_interactions.can_wax_copper").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            else {
+                tooltip.add(Text.translatable("tag.item.immersive_interactions.can_wax_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+        }
+        if (stack.getItem() instanceof PatinaItem) {
+            tooltip.add(Text.translatable("tooltip.item.immersive_interactions.copper_patina").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        if (stack.getItem() instanceof ChiselItem) {
+            tooltip.add(Text.translatable("tooltip.item.immersive_interactions.chisel").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        if (stack.getItem() instanceof ShearsItem) {
+            tooltip.add(Text.translatable("tooltip.item.immersive_interactions.shears").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+
+        if (stack.getItem() instanceof BlockItem) {
+            String itemString = stack.getItem().toString();
+            Block blockItem = Registries.BLOCK.get(Identifier.of(itemString));
+            BlockState blockState = blockItem.getDefaultState();
+
+            if (blockState.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS)) {
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.mossable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            if (blockState.isIn(ModBlockTagProvider.CRACKABLE_BLOCKS)) {
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.crackable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            if (blockState.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS)) {
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.slimable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            if (blockState.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS)) {
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.amethystable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            if (blockState.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS)) {
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.chiselable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            if (isModLoaded("waxed_workstations") && blockState.isIn(ConventionalBlockTags.VILLAGER_JOB_SITES)) {
+                    tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
         }
     }
 }

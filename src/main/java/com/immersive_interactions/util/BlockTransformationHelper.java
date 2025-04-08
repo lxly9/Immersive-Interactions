@@ -13,17 +13,6 @@ import org.slf4j.LoggerFactory;
 public class BlockTransformationHelper {
     private static final Logger log = LoggerFactory.getLogger(BlockTransformationHelper.class);
 
-    private static final String[][] categoryMappings = {
-            {"copper_block", "chiseled_copper"},
-            {"exposed_copper", "exposed_chiseled_copper"},
-            {"weathered_copper", "weathered_chiseled_copper"},
-            {"oxidized_copper", "oxidized_chiseled_copper"},
-            {"chiseled_copper", "copper_block"},
-            {"exposed_chiseled_copper", "exposed_copper"},
-            {"weathered_chiseled_copper", "weathered_copper"},
-            {"oxidized_chiseled_copper", "oxidized_copper"}
-    };
-
     public static Block findBestMatch(String blockIdString, TagKey<Block> tagKey) {
         Block bestMatch = null;
         int bestScore = Integer.MIN_VALUE;
@@ -42,17 +31,26 @@ public class BlockTransformationHelper {
             int score = 0;
 
             if (blockIdString.equals(tagBlockId)) {
-                score += 100;
+                score += 1000;
             }
 
-            for (String[] mapping : categoryMappings) {
-                if (blockIdString.contains(mapping[0]) && tagBlockId.contains(mapping[1])) {
-                    score += 50;
+            String[] originalParts = blockIdString.split("[/:_]");
+            String[] candidateParts = tagBlockId.split("[/:_]");
+
+            int sharedParts = 0;
+            for (String part : originalParts) {
+                for (String other : candidateParts) {
+                    if (part.equals(other)) {
+                        sharedParts++;
+                        break;
+                    }
                 }
             }
+            score += sharedParts * 20;
 
             int editDistance = levenshteinDistance(blockIdString, tagBlockId);
-            score -= editDistance;
+            score -= Math.min(editDistance, 10);
+
 
             if (score > bestScore) {
                 bestScore = score;

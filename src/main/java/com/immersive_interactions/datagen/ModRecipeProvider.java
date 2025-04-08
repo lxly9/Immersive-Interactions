@@ -58,7 +58,11 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .input(Items.HONEYCOMB)
                 .input(Items.HONEYCOMB)
                 .input(Items.HONEYCOMB)
-                .criterion(FabricRecipeProvider.hasItem(Items.MOSS_BLOCK), FabricRecipeProvider.conditionsFromItem(Items.MOSS_BLOCK))
+                .criterion(FabricRecipeProvider.hasItem(ModItems.WAXED_BRUSH), FabricRecipeProvider.conditionsFromItem(ModItems.WAXED_BRUSH))
+                .offerTo(recipeExporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.STICK, 2)
+                .input(ModItems.BARK)
+                .criterion(FabricRecipeProvider.hasItem(Items.STICK), FabricRecipeProvider.conditionsFromItem(Items.STICK))
                 .offerTo(recipeExporter);
 
     }

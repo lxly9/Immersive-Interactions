@@ -13,8 +13,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
-import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
-
 public class ModItems {
     public static final Item COPPER_PATINA = registerItem("copper_patina", new PatinaItem(new Item.Settings()));
     public static final Item CHISEL = registerItem("chisel", new ChiselItem(new Item.Settings().maxDamage(128)));
