@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,14 +19,20 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Property;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.immersive_interactions.util.BlockTransformationHelper.copyProperty;
@@ -229,5 +236,27 @@ public class ItemMixin {
             }
         }
         return original.call(context);
+    }
+
+    @Inject(at=@At("HEAD"),method = "appendTooltip")
+    private void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo ci) {
+        Identifier id = Identifier.of("farmersdelight", "tree_bark");
+        Item barkFD = Registries.ITEM.get(id);
+
+        if (stack.isIn(ModItemTagProvider.CAN_APPLY_MOSS)) {
+            tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_moss").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        else if (stack.isIn(ModItemTagProvider.CAN_APPLY_BARK) || stack.isOf(barkFD)) {
+            tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_bark").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        else if (stack.isIn(ModItemTagProvider.CAN_APPLY_SLIME)) {
+            tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_slime").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        else if (stack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
+            tooltip.add(Text.translatable("tag.item.immersive_interactions.can_apply_amethyst").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        else if (stack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK)) {
+            tooltip.add(Text.translatable("tag.item.immersive_interactions.can_repair_brick").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
     }
 }
