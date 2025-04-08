@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "minecraft:moss_block"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "immersive_interactions:moss_clump"
+  }
+}
