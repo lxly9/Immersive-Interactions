@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -43,6 +44,8 @@ public class ItemMixin {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         String blockIdString = Registries.BLOCK.getId(block).toString();
+        Identifier id = Identifier.of("farmersdelight", "tree_bark");
+        Item barkFD = Registries.ITEM.get(id);
 
         if (!world.isClient){
             ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
@@ -168,7 +171,7 @@ public class ItemMixin {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS));
             }
-            if (state.isIn(BlockTags.LOGS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_BARK)) {
+            if (state.isIn(BlockTags.LOGS) && (itemStack.isIn(ModItemTagProvider.CAN_APPLY_BARK) || itemStack.isOf(barkFD))) {
                     Block newBlock = transformLogToWood(blockIdString);
                     String clickedWood = block.toString();
                     if (newBlock != null) {

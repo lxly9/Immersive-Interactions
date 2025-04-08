@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.registry.Registries;
@@ -19,6 +20,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
+
 
 @Mixin(AxeItem.class)
 public class AxeItemMixin {
@@ -51,12 +55,19 @@ public class AxeItemMixin {
         Block block = state.getBlock();
         Identifier blockId = Registries.BLOCK.getId(block);
         String blockIdString = blockId.toString();
+        Identifier id = Identifier.of("farmersdelight", "tree_bark");
+        Item barkFD = Registries.ITEM.get(id);
 
 
         if (!world.isClient && state.isIn(BlockTags.LOGS) && player != null) {
 
             if (!player.isCreative() && !blockIdString.contains("stripped"))  {
-                Block.dropStack(world, pos, new ItemStack(ModItems.BARK));
+                if (isModLoaded("farmersdelight")){
+                    Block.dropStack(world, pos, new ItemStack(barkFD));
+                }
+                else {
+                    Block.dropStack(world, pos, new ItemStack(ModItems.BARK));
+                }
             }
         }
     }

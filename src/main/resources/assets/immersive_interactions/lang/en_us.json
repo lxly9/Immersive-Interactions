@@ -3,5 +3,10 @@
   "item.immersive_interactions.chisel": "Chisel",
   "item.immersive_interactions.moss_clump": "Moss Clump",
   "item.immersive_interactions.bark": "Bark",
-  "item.immersive_interactions.waxed_brush": "Waxed Brush"
+  "item.immersive_interactions.waxed_brush": "Waxed Brush",
+  "tag.item.immersive_interactions.can_apply_moss": "Can apply Moss to Blocks",
+  "tag.item.immersive_interactions.can_apply_bark": "Can apply Bark to Blocks",
+  "tag.item.immersive_interactions.can_repair_brick": "Can repair Bricks",
+  "tag.item.immersive_interactions.can_apply_slime": "Can apply Slime to Blocks",
+  "tag.item.immersive_interactions.can_apply_amethyst": "Can apply Amethyst to Blocks"
 }
