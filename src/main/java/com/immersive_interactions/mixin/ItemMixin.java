@@ -8,9 +8,7 @@ import com.immersive_interactions.item.custom.PatinaItem;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.PistonBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
@@ -48,7 +46,7 @@ public abstract class ItemMixin {
     @Shadow @Final private static Logger LOGGER;
 
     @WrapMethod(method = "useOnBlock")
-    private ActionResult mod_id$useOnBlock(ItemUsageContext context, Operation<ActionResult> original) {
+    private ActionResult immersive_interactions$useOnBlock(ItemUsageContext context, Operation<ActionResult> original) {
         ItemStack itemStack = context.getStack();
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
@@ -200,7 +198,7 @@ public abstract class ItemMixin {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
             }
-            if (state.isIn(ConventionalBlockTags.DYED) && itemStack.getItem() instanceof DyeItem) {
+            if ((state.isIn(ConventionalBlockTags.DYED) || state.isIn(ConventionalBlockTags.GLASS_BLOCKS) || state.isIn(ConventionalBlockTags.GLASS_PANES)) && itemStack.getItem() instanceof DyeItem) {
                 Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
                 BlockState newState = newBlock.getDefaultState();
                 String dyeColor = itemStack.getItem().toString().replace("dye", "");
@@ -210,8 +208,7 @@ public abstract class ItemMixin {
                         newState = copyProperty(newState, state, property);
                     }
                 }
-
-                if (!state.toString().contains(dyeColor)) {
+                if (!state.toString().contains(dyeColor) || !(state.getBlock() instanceof BannerBlock) || !(state.getBlock() instanceof BedBlock)) {
                     world.setBlockState(pos, newState);
                     world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS);
                     context.getStack().decrementUnlessCreative(1, player);
@@ -297,6 +294,9 @@ public abstract class ItemMixin {
         }
         if (stack.getItem() instanceof ShearsItem) {
             tooltip.add(Text.translatable("tooltip.item.immersive_interactions.shears").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+        }
+        if (stack.getItem() instanceof DyeItem) {
+            tooltip.add(Text.translatable("tooltip.item.immersive_interactions.dye").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
         }
 
         if (stack.getItem() instanceof BlockItem) {

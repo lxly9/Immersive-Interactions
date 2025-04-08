@@ -19,5 +19,6 @@
   "tooltip.item.immersive_interactions.chisel": "Used to chisel blocks",
   "tooltip.item.immersive_interactions.shears": "Used to remove moss from blocks",
   "tag.item.immersive_interactions.can_wax_blocks": "Used to wax blocks",
-  "tag.block.immersive_interactions.waxable_blocks": "Can be waxed"
+  "tag.block.immersive_interactions.waxable_blocks": "Can be waxed",
+  "tooltip.item.immersive_interactions.dye": "Used to dye blocks"
 }
