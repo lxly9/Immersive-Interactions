@@ -1,7 +1,5 @@
 package com.immersive_interactions.item.custom;
 
-import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 
