@@ -2,18 +2,14 @@ package com.immersive_interactions.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
-
-import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
 
 public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public ModBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
@@ -31,8 +27,6 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public static final TagKey<Block> AMETHYSTABLE_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "amethystable_blocks"));
     public static final TagKey<Block> AMETHYST_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "amethyst_blocks"));
     public static final TagKey<Block> DYEABLE_BASE_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "dyeable_base_blocks"));
-    public static final TagKey<Block> DYED_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "dyed_blocks"));
-    public static final TagKey<Block> WAXABLE_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("immersive_interactions", "waxable_blocks"));
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {

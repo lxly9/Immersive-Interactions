@@ -21,11 +21,9 @@ public class DyeMatcher {
         assert dyedBlock != null;
         String baseDyedBlock = dyedBlock.toString().replace("white_", "");
         String newBaseDyedBlock = baseDyedBlock.replace("glass", "stained_glass");
-        LOGGER.info(newBaseDyedBlock);
         String dyeColor = itemStack.getItem().toString().replace("dye", "");
         String[] parts = newBaseDyedBlock.split(":");
         String newDyedBlockId = dyeColor + parts[1].replace("}","");
-        LOGGER.info(newDyedBlockId);
         return Registries.BLOCK.get(Identifier.of(newDyedBlockId));
     }
 }

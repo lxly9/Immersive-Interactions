@@ -41,14 +41,11 @@ import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
 import static com.immersive_interactions.util.BlockTransformationHelper.copyProperty;
 import static com.immersive_interactions.util.BlockTransformationHelper.findBestMatch;
 import static com.immersive_interactions.util.DyeMatcher.dyedBlockMatcher;
-import static com.immersive_interactions.util.DyeTransformationHelper.findDyeMatch;
 import static com.immersive_interactions.util.WoodTransformationHelper.transformLogToWood;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
     @Shadow @Final private static Logger LOGGER;
-
-    @Shadow public abstract Item asItem();
 
     @WrapMethod(method = "useOnBlock")
     private ActionResult mod_id$useOnBlock(ItemUsageContext context, Operation<ActionResult> original) {
