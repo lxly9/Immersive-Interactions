@@ -322,6 +322,9 @@ public abstract class ItemMixin {
             if (isModLoaded("waxed_workstations") && blockState.isIn(ConventionalBlockTags.VILLAGER_JOB_SITES)) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
+            if (itemString.contains("copper") && !(itemString.contains("ore") || itemString.contains("piston") || itemString.contains("raw"))) {
+                    tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
         }
     }
 }
