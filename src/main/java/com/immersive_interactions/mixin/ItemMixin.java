@@ -80,7 +80,7 @@ public abstract class ItemMixin {
             }
             if (state.isIn(ModBlockTagProvider.CRACKED_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK)) {
                 String baseBlock = blockIdString.replace("cracked_","");
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CRACKABLE_BLOCKS, world);
+                    Block newBlock = findBestMatch(baseBlock, ModBlockTagProvider.CRACKABLE_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {

@@ -11,7 +11,6 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Property;
 import net.minecraft.world.World;
-import static com.immersive_interactions.ImmersiveInteractions.LOGGER;
 
 public class BlockTransformationHelper {
 
