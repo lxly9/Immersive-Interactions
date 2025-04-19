@@ -59,7 +59,9 @@ public abstract class ItemMixin {
         if (!world.isClient){
             ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
             if (itemStack.getItem() instanceof PickaxeItem && state.isIn(ModBlockTagProvider.CRACKABLE_BLOCKS)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CRACKED_BLOCKS);
+                String[] baseBlock = blockIdString.split(":");
+                String crackedBlock = "cracked_" + baseBlock[1];
+                    Block newBlock = findBestMatch(crackedBlock, ModBlockTagProvider.CRACKED_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -77,7 +79,8 @@ public abstract class ItemMixin {
                 return ActionResult.success(state.isIn(ModBlockTagProvider.CRACKABLE_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.CRACKED_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CRACKABLE_BLOCKS);
+                String baseBlock = blockIdString.replace("cracked_","");
+                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CRACKABLE_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -94,7 +97,8 @@ public abstract class ItemMixin {
                 return ActionResult.success(state.isIn(ModBlockTagProvider.CRACKED_BLOCKS));
             }
             if (itemStack.getItem() instanceof ShearsItem && state.isIn(ModBlockTagProvider.MOSSY_BLOCKS)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.MOSSABLE_BLOCKS);
+                String baseBlock = blockIdString.replace("mossy_","");
+                    Block newBlock = findBestMatch(baseBlock, ModBlockTagProvider.MOSSABLE_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -113,7 +117,9 @@ public abstract class ItemMixin {
                 return ActionResult.success(state.isIn(ModBlockTagProvider.MOSSY_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.MOSSY_BLOCKS);
+                String[] baseBlock = blockIdString.split(":");
+                String mossyBlock = "mossy_" + baseBlock[1];
+                    Block newBlock = findBestMatch(mossyBlock, ModBlockTagProvider.MOSSY_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -131,7 +137,7 @@ public abstract class ItemMixin {
             }
             if (state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_SLIME)) {
                 if (state.getBlock() instanceof PistonBlock) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS);
+                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
 
@@ -146,7 +152,7 @@ public abstract class ItemMixin {
                         context.getStack().decrementUnlessCreative(1, player);
                     }
                 } else {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS);
+                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -164,7 +170,7 @@ public abstract class ItemMixin {
                 return ActionResult.success(state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS));
             }
             if (state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.AMETHYST_BLOCKS);
+                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.AMETHYST_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -199,7 +205,7 @@ public abstract class ItemMixin {
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
             }
             if ((state.isIn(ConventionalBlockTags.DYED) || state.isIn(ConventionalBlockTags.GLASS_BLOCKS) || state.isIn(ConventionalBlockTags.GLASS_PANES)) && itemStack.getItem() instanceof DyeItem) {
-                Block newBlock = dyedBlockMatcher(blockIdString, itemStack);
+                Block newBlock = dyedBlockMatcher(blockIdString, itemStack, world);
                 BlockState newState = newBlock.getDefaultState();
                 String dyeColor = itemStack.getItem().toString().replace("dye", "");
 
@@ -218,7 +224,9 @@ public abstract class ItemMixin {
             }
             if (itemStack.getItem() instanceof ChiselItem) {
                 if (state.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS) )  {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CHISELED_BLOCKS);
+                    String[] baseBlock = blockIdString.split(":");
+                    String chiselBlock = "chiseled_" + baseBlock[1];
+                    Block newBlock = findBestMatch(chiselBlock, ModBlockTagProvider.CHISELED_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -236,7 +244,8 @@ public abstract class ItemMixin {
                     return ActionResult.success(state.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS));
 
                 } else if (state.isIn(ModBlockTagProvider.CHISELED_BLOCKS)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.CHISELABLE_BLOCKS);
+                    String baseBlock = blockIdString.replace("chiseled_","");
+                    Block newBlock = findBestMatch(baseBlock, ModBlockTagProvider.CHISELABLE_BLOCKS, world);
                     if (newBlock != null) {
                         BlockState newState = newBlock.getDefaultState();
                         for (Property<?> property : state.getProperties()) {
@@ -322,7 +331,7 @@ public abstract class ItemMixin {
             if (isModLoaded("waxed_workstations") && blockState.isIn(ConventionalBlockTags.VILLAGER_JOB_SITES)) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
-            if (itemString.contains("copper") && !(itemString.contains("ore") || itemString.contains("piston") || itemString.contains("raw"))) {
+            if (itemString.contains("copper") && !itemString.contains("^(ore|piston|raw|waxed|lampear|crossing)")) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
         }

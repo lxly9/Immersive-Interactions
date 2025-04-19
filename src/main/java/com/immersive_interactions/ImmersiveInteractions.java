@@ -17,6 +17,8 @@ public class ImmersiveInteractions implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
+
+
 	}
 
 	public static boolean isModLoaded(String modId) {

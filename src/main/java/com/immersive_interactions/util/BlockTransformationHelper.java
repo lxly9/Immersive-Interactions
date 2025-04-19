@@ -2,40 +2,45 @@ package com.immersive_interactions.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Property;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.world.World;
+import static com.immersive_interactions.ImmersiveInteractions.LOGGER;
 
 public class BlockTransformationHelper {
-    private static final Logger log = LoggerFactory.getLogger(BlockTransformationHelper.class);
 
-    public static Block findBestMatch(String blockIdString, TagKey<Block> tagKey) {
+    public static Block findBestMatch(String blockIdString, TagKey<Block> tagKey, World world) {
         Block bestMatch = null;
         int bestScore = Integer.MIN_VALUE;
 
         boolean isInfested = blockIdString.contains("infested");
 
-        RegistryEntryList<Block> blocksInTag = Registries.BLOCK.getEntryList(tagKey).orElse(null);
+        DynamicRegistryManager worldRegistry = world.getRegistryManager();
+        Registry<Block> blockRegistry = worldRegistry.get(RegistryKeys.BLOCK);
+        RegistryEntryList<Block> blocksInTag = blockRegistry.getEntryList(tagKey).orElse(null);
         if (blocksInTag == null) return null;
 
         for (RegistryEntry<Block> entry : blocksInTag) {
             Block tagBlock = entry.value();
-            String tagBlockId = Registries.BLOCK.getId(tagBlock).toString();
+            String[] tagBlockId = Registries.BLOCK.getId(tagBlock).toString().split(":");
+            String tagBlockString = tagBlockId[1];
 
-            if (isInfested != tagBlockId.contains("infested")) continue;
+            if (isInfested != tagBlockString.contains("infested")) continue;
 
             int score = 0;
 
-            if (blockIdString.equals(tagBlockId)) {
+            if (blockIdString.equals(tagBlockString)) {
                 score += 1000;
             }
 
             String[] originalParts = blockIdString.split("[/:_]");
-            String[] candidateParts = tagBlockId.split("[/:_]");
+            String[] candidateParts = tagBlockString.split("[/:_]");
 
             int sharedParts = 0;
             for (String part : originalParts) {
@@ -48,7 +53,7 @@ public class BlockTransformationHelper {
             }
             score += sharedParts * 20;
 
-            int editDistance = levenshteinDistance(blockIdString, tagBlockId);
+            int editDistance = levenshteinDistance(blockIdString, tagBlockString);
             score -= Math.min(editDistance, 10);
 
 
@@ -88,4 +93,3 @@ public class BlockTransformationHelper {
         return newState.with(property, oldState.get(property));
     }
 }
-
