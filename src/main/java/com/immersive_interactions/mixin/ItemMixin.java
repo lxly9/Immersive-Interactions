@@ -13,7 +13,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -26,6 +28,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
 import static com.immersive_interactions.util.BlockTransformationHelper.copyProperty;
@@ -312,6 +317,7 @@ public abstract class ItemMixin {
             String itemString = stack.getItem().toString();
             Block blockItem = Registries.BLOCK.get(Identifier.of(itemString));
             BlockState blockState = blockItem.getDefaultState();
+            Optional<RegistryEntry<PointOfInterestType>> optional = PointOfInterestTypes.getTypeForState(blockState);
 
             if (blockState.isIn(ModBlockTagProvider.MOSSABLE_BLOCKS)) {
                 tooltip.add(Text.translatable("tag.block.immersive_interactions.mossable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
@@ -328,7 +334,7 @@ public abstract class ItemMixin {
             if (blockState.isIn(ModBlockTagProvider.CHISELABLE_BLOCKS)) {
                 tooltip.add(Text.translatable("tag.block.immersive_interactions.chiselable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
-            if (isModLoaded("waxed_workstations") && blockState.isIn(ConventionalBlockTags.VILLAGER_JOB_SITES)) {
+            if (isModLoaded("waxed_workstations") && optional.isPresent()) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
             if (itemString.contains("copper") && !itemString.contains("^(ore|piston|raw|waxed|lampear|crossing)")) {
