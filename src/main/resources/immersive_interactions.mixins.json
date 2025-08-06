@@ -5,14 +5,20 @@
   "mixins": [
     "AbstractSignBlockMixin",
     "AxeItemMixin",
-    "BlockMixin",
     "BlockAccessor",
     "BoatEntityMixin",
     "ChestBoatItemMixin",
-    "DegradableMixin",
     "ItemMixin",
     "MinecartEntityMixin",
-    "VehicleEntityMixin"
+    "VehicleEntityMixin",
+    "copper.BlockMixin",
+    "copper.BulbBlockMixin",
+    "copper.DegradableMixin",
+    "copper.DoorBlockMixin",
+    "copper.GrateBlockMixin",
+    "copper.SlabBlockMixin",
+    "copper.StairsBlockMixin",
+    "copper.TrapdoorBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

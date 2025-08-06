@@ -1,4 +1,4 @@
-package com.immersive_interactions.mixin;
+package com.immersive_interactions.mixin.copper;
 
 import com.immersive_interactions.util.ModProperties;
 import net.minecraft.block.BlockState;

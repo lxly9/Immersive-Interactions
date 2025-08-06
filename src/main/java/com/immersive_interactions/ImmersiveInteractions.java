@@ -6,6 +6,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Oxidizable;
 import net.minecraft.block.OxidizableBlock;
 import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
@@ -23,22 +24,28 @@ public class ImmersiveInteractions implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
-		setDefaultStatesAfterRegistration();
+		Registries.BLOCK.forEach(block -> {
+			if (block instanceof Oxidizable) {
+				BlockState defaultState = block.getDefaultState();
+
+				if (defaultState.contains(WAXED)) {
+					defaultState = defaultState.with(WAXED, false);
+				}
+				if (defaultState.contains(DEGRADATION)) {
+					defaultState = defaultState.with(DEGRADATION, 0);
+				}
+
+				((BlockAccessor) block).callSetDefaultState(defaultState);
+			}
+		});
 	}
 
 	public static boolean isModLoaded(String modId) {
 		return FabricLoader.getInstance().isModLoaded(modId);
 	}
 
-	public void setDefaultStatesAfterRegistration() {
-		for (Block block : Registries.BLOCK) {
-			if (block instanceof OxidizableBlock) {
-				BlockState defaultState = block.getDefaultState();
-				if (!defaultState.getProperties().contains(DEGRADATION)) continue;
-
-				BlockState newDefault = defaultState.with(DEGRADATION, 0).with(WAXED, false);
-				((BlockAccessor) block).callSetDefaultState(newDefault);
-			}
-		}
+	private boolean shouldInject(Class<?> clazz) {
+		String className = clazz.getSimpleName().toLowerCase();
+		return className.contains("oxidizable") && !className.equals("oxidizable");
 	}
 }
