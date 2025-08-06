@@ -15,6 +15,5 @@ public class ImmersiveInteractionsDataGenerator implements DataGeneratorEntrypoi
 		pack.addProvider(ModItemTagProvider::new);
 		pack.addProvider(ModLootTableProvider::new);
 		pack.addProvider(ModRecipeProvider::new);
-		pack.addProvider(DegradationBlockStateProvider::new);
 	}
 }
