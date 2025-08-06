@@ -5,8 +5,11 @@
   "mixins": [
     "AbstractSignBlockMixin",
     "AxeItemMixin",
+    "BlockMixin",
+    "BlockAccessor",
     "BoatEntityMixin",
     "ChestBoatItemMixin",
+    "DegradableMixin",
     "ItemMixin",
     "MinecartEntityMixin",
     "VehicleEntityMixin"
