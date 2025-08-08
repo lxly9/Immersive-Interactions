@@ -18,7 +18,8 @@
     "copper.GrateBlockMixin",
     "copper.SlabBlockMixin",
     "copper.StairsBlockMixin",
-    "copper.TrapdoorBlockMixin"
+    "copper.TrapdoorBlockMixin",
+    "copper.compat.RailBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
