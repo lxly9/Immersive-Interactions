@@ -1,7 +1,8 @@
 package com.immersive_interactions.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
@@ -21,31 +22,49 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
+import static com.immersive_interactions.ImmersiveInteractions.*;
+import static com.immersive_interactions.util.ModProperties.*;
 
 
 @Mixin(AxeItem.class)
 public class AxeItemMixin {
 
-    @Inject(method = "useOnBlock", at = @At("HEAD"))
-    private void injectScrape(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
+    @WrapMethod(method = "useOnBlock")
+    private ActionResult injectScrape(ItemUsageContext context, Operation<ActionResult> original) {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         PlayerEntity player = context.getPlayer();
         Block block = state.getBlock();
+        int degradation = state.get(DEGRADATION);
         Identifier blockId = Registries.BLOCK.getId(block);
         String blockIdString = blockId.toString();
 
 
-        if (!world.isClient && state.getBlock() instanceof Oxidizable oxidizable && player != null) {
-            Oxidizable.OxidationLevel oxidationLevel = oxidizable.getDegradationLevel();
-
-            if (!player.isCreative() && !blockIdString.contains("waxed") && oxidationLevel.ordinal() > 0)  {
-                Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
+        if (!world.isClient && isOxidizable(block.getClass()) && player != null) {
+//            Oxidizable.OxidationLevel oxidationLevel = oxidizable.getDegradationLevel();
+            if (!state.get(WAXED) && degradation > 0){
+                if (!player.isCreative()) {
+                    Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
+                }
+                BlockState newState = block.getStateWithProperties(state).with(DEGRADATION, degradation -1);
+                world.setBlockState(pos, newState);
+                return ActionResult.success(degradation > 0);
             }
+
+            if (state.get(WAXED)){
+                BlockState newState = block.getDefaultState().with(WAXED, false);
+                world.setBlockState(pos, newState);
+                return ActionResult.success(state.get(WAXED));
+            }
+
+//            if (!player.isCreative() && !blockIdString.contains("waxed") && oxidationLevel.ordinal() > 0)  {
+//                Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
+//            }
         }
+        return original.call(context);
     }
+
     @Inject(method = "useOnBlock", at = @At("HEAD"))
     private void injectStripping(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
         World world = context.getWorld();

@@ -3,18 +3,10 @@ package com.immersive_interactions;
 import com.immersive_interactions.item.ModItems;
 import com.immersive_interactions.mixin.BlockAccessor;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.state.property.Property;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.WorldChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +26,19 @@ public class ImmersiveInteractions implements ModInitializer {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
 		buildDynamicCopperMap();
-		registerChunkReplacement();
+		applyBlockStates();
+//		registerChunkReplacement();
 //		registerPlacementInterception();
+
+	}
+
+	private void applyBlockStates() {
 		Registries.BLOCK.forEach(block -> {
-			if (shouldInject(block.getClass())) {
+			if (isOxidizable(block.getClass())) {
 				BlockState defaultState = block.getDefaultState();
+				if (block.getName().toString().contains(".*(exposed_|weathered_|oxidized_)*.")){
+					return;
+				}
 
 				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
 					defaultState = defaultState.with(WAXED, false).with(DEGRADATION, 0);
@@ -46,14 +46,6 @@ public class ImmersiveInteractions implements ModInitializer {
 
 				((BlockAccessor) block).callSetDefaultState(defaultState);
 			}
-//			if (isModLoaded("copperrails") && isInstanceOf(block, "com.copperrails.block.OxidizableCopperRailBlock")) {
-//				BlockState defaultState = block.getDefaultState();
-//				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
-//					defaultState = defaultState.with(WAXED, false).with(DEGRADATION, 0);
-//				}
-//
-//				((BlockAccessor) block).callSetDefaultState(defaultState);
-//			}
 		});
 	}
 
@@ -61,7 +53,7 @@ public class ImmersiveInteractions implements ModInitializer {
 		return FabricLoader.getInstance().isModLoaded(modId);
 	}
 
-	private boolean shouldInject(Class<?> clazz) {
+	public static boolean isOxidizable(Class<?> clazz) {
 		String className = clazz.getSimpleName().toLowerCase();
 		return className.contains("oxidizable") && !className.equals("oxidizable");
 	}
@@ -106,74 +98,11 @@ public class ImmersiveInteractions implements ModInitializer {
 
 			if (baseBlock != Blocks.AIR) {
 				try {
-					BlockState replacement = baseBlock.getDefaultState()
-							.with(WAXED, waxed)
-							.with(DEGRADATION, degradation);
+					BlockState replacement = baseBlock.getDefaultState().with(WAXED, waxed).with(DEGRADATION, degradation);
 					COPPER_MAP.put(block, replacement);
-				} catch (IllegalArgumentException e) {
-					// Base block doesn’t have the properties — skip
+				} catch (IllegalArgumentException ignored) {
 				}
 			}
 		});
-	}
-
-	private void registerChunkReplacement() {
-		ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> {
-			if (!world.isClient) {
-				replaceCopperInChunk(chunk);
-			}
-		});
-	}
-
-
-	private void replaceCopperInChunk(WorldChunk chunk) {
-		BlockPos.Mutable pos = new BlockPos.Mutable();
-		for (int x = 0; x < 16; x++) {
-			for (int y = chunk.getBottomY(); y < chunk.getTopY(); y++) {
-				for (int z = 0; z < 16; z++) {
-					pos.set(chunk.getPos().getStartX() + x, y, chunk.getPos().getStartZ() + z);
-					BlockState state = chunk.getBlockState(pos);
-					BlockState replacementBase = COPPER_MAP.get(state.getBlock());
-					if (replacementBase != null) {
-						BlockState replacement = copyCompatibleProperties(state, replacementBase);
-						chunk.setBlockState(pos, replacement, false);
-					}
-
-				}
-			}
-		}
-	}
-
-	private void registerPlacementInterception() {
-		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-			ItemStack stack = player.getStackInHand(hand);
-			if (stack.getItem() instanceof BlockItem blockItem) {
-				Block block = blockItem.getBlock();
-				BlockState replacement = COPPER_MAP.get(block);
-				if (replacement != null) {
-					if (!world.isClient) {
-						BlockPos placePos = hitResult.getBlockPos().offset(hitResult.getSide());
-						world.setBlockState(placePos, replacement);
-						if (!player.isCreative()) {
-							stack.decrement(1);
-						}
-					}
-					return ActionResult.SUCCESS;
-				}
-			}
-			return ActionResult.PASS;
-		});
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends Comparable<T>> BlockState copyCompatibleProperties(BlockState original, BlockState target) {
-		for (Property<?> property : original.getProperties()) {
-			if (target.contains(property)) {
-				Property<T> typedProperty = (Property<T>) property;
-				T value = (T) original.get(property);
-				target = target.with(typedProperty, value);
-			}
-		}
-		return target;
 	}
 }
