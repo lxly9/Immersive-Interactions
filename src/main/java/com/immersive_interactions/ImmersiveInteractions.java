@@ -10,6 +10,7 @@ import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -34,9 +35,9 @@ public class ImmersiveInteractions implements ModInitializer {
 		ModItems.registerModItems();
 		buildDynamicCopperMap();
 		registerChunkReplacement();
-		registerPlacementInterception();
+//		registerPlacementInterception();
 		Registries.BLOCK.forEach(block -> {
-			if (block instanceof Oxidizable) {
+			if (shouldInject(block.getClass())) {
 				BlockState defaultState = block.getDefaultState();
 
 				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
@@ -45,14 +46,14 @@ public class ImmersiveInteractions implements ModInitializer {
 
 				((BlockAccessor) block).callSetDefaultState(defaultState);
 			}
-			if (isModLoaded("copperrails") && isInstanceOf(block, "com.copperrails.block.OxidizableCopperRailBlock")) {
-				BlockState defaultState = block.getDefaultState();
-				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
-					defaultState = defaultState.with(WAXED, false).with(DEGRADATION, 0);
-				}
-
-				((BlockAccessor) block).callSetDefaultState(defaultState);
-			}
+//			if (isModLoaded("copperrails") && isInstanceOf(block, "com.copperrails.block.OxidizableCopperRailBlock")) {
+//				BlockState defaultState = block.getDefaultState();
+//				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
+//					defaultState = defaultState.with(WAXED, false).with(DEGRADATION, 0);
+//				}
+//
+//				((BlockAccessor) block).callSetDefaultState(defaultState);
+//			}
 		});
 	}
 
@@ -132,10 +133,12 @@ public class ImmersiveInteractions implements ModInitializer {
 				for (int z = 0; z < 16; z++) {
 					pos.set(chunk.getPos().getStartX() + x, y, chunk.getPos().getStartZ() + z);
 					BlockState state = chunk.getBlockState(pos);
-					BlockState replacement = COPPER_MAP.get(state.getBlock());
-					if (replacement != null) {
+					BlockState replacementBase = COPPER_MAP.get(state.getBlock());
+					if (replacementBase != null) {
+						BlockState replacement = copyCompatibleProperties(state, replacementBase);
 						chunk.setBlockState(pos, replacement, false);
 					}
+
 				}
 			}
 		}
@@ -160,5 +163,17 @@ public class ImmersiveInteractions implements ModInitializer {
 			}
 			return ActionResult.PASS;
 		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Comparable<T>> BlockState copyCompatibleProperties(BlockState original, BlockState target) {
+		for (Property<?> property : original.getProperties()) {
+			if (target.contains(property)) {
+				Property<T> typedProperty = (Property<T>) property;
+				T value = (T) original.get(property);
+				target = target.with(typedProperty, value);
+			}
+		}
+		return target;
 	}
 }
