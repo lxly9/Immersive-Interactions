@@ -45,6 +45,7 @@ import static com.immersive_interactions.ImmersiveInteractions.isModLoaded;
 import static com.immersive_interactions.util.BlockTransformationHelper.copyProperty;
 import static com.immersive_interactions.util.BlockTransformationHelper.findBestMatch;
 import static com.immersive_interactions.util.DyeMatcher.dyedBlockMatcher;
+import static com.immersive_interactions.util.ModProperties.*;
 import static com.immersive_interactions.util.WoodTransformationHelper.transformLogToWood;
 
 @Mixin(Item.class)
@@ -56,7 +57,7 @@ public abstract class ItemMixin implements ToggleableFeature {
     @Unique
     public boolean isEnabled(FeatureSet enabledFeatures) {
         String key = registryEntry.getKey().get().toString();
-        return !key.matches(".*(exposed_|weathered_|oxidized_|waxed_).*");
+        return !key.matches(".*(exposed_|weathered_|oxidized_).*");
     }
 
 
@@ -349,8 +350,11 @@ public abstract class ItemMixin implements ToggleableFeature {
             if (isModLoaded("waxed_workstations") && optional.isPresent()) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
-            if (itemString.contains("copper") && !itemString.contains("^(ore|piston|raw|waxed|lampear|crossing)")) {
+            if (blockState.contains(WAXED) || itemString.contains("sign")) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            }
+            if (blockState.contains(DEGRADATION)) {
+                    tooltip.add(Text.translatable("tag.block.immersive_interactions.oxidizable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
         }
     }
