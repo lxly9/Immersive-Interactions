@@ -46,6 +46,8 @@ public class HoneycombItemMixin {
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, state));
             world.syncWorldEvent(playerEntity, 3003, blockPos, 0);
             cir.setReturnValue(ActionResult.success(!state.get(WAXED)));
+            return;
         }
+        cir.setReturnValue(ActionResult.PASS);
     }
 }

@@ -56,8 +56,11 @@ public abstract class ItemMixin implements ToggleableFeature {
 
     @Unique
     public boolean isEnabled(FeatureSet enabledFeatures) {
-        String key = registryEntry.getKey().get().toString();
-        return !key.matches(".*(exposed_|weathered_|oxidized_).*");
+        if ((Object) this instanceof BlockItem) {
+            String key = registryEntry.getKey().get().toString();
+            return !key.matches(".*(exposed_|weathered_|oxidized_|waxed_).*");
+        }
+        return true;
     }
 
 
