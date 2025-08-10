@@ -25,7 +25,6 @@ public class ImmersiveInteractions implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
-		buildDynamicCopperMap();
 		applyBlockStates();
 //		registerChunkReplacement();
 //		registerPlacementInterception();
@@ -65,44 +64,5 @@ public class ImmersiveInteractions implements ModInitializer {
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
-	}
-
-	private static final Map<Block, BlockState> COPPER_MAP = new HashMap<>();
-
-	private void buildDynamicCopperMap() {
-		Registries.BLOCK.forEach(block -> {
-			var id = Registries.BLOCK.getId(block);
-			String path = id.getPath();
-
-			if (!path.contains("copper")) return;
-
-			boolean waxed = path.contains("waxed");
-
-			int degradation = 0;
-			if (path.contains("exposed")) degradation = 1;
-			else if (path.contains("weathered")) degradation = 2;
-			else if (path.contains("oxidized")) degradation = 3;
-
-			String basePath = path
-					.replace("waxed_", "")
-					.replace("exposed_", "")
-					.replace("weathered_", "")
-					.replace("oxidized_", "");
-
-			Block baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), basePath));
-
-			if (baseBlock == Blocks.AIR) {
-				String altBasePath = basePath + "_block";
-				baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), altBasePath));
-			}
-
-			if (baseBlock != Blocks.AIR) {
-				try {
-					BlockState replacement = baseBlock.getDefaultState().with(WAXED, waxed).with(DEGRADATION, degradation);
-					COPPER_MAP.put(block, replacement);
-				} catch (IllegalArgumentException ignored) {
-				}
-			}
-		});
 	}
 }
