@@ -40,15 +40,12 @@ public abstract class BlockMixin {
         }
     }
 
-    @Inject(method = "onPlaced", at = @At("HEAD"))
+    @Inject(method = "onPlaced", at = @At("TAIL"))
     private void changePlacedBlock(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack, CallbackInfo ci) {
         Block block = state.getBlock();
-        Block blockInHand = Block.getBlockFromItem(itemStack.getItem());
         BlockState replacement = getCopper(state, block);
 
-        LOGGER.info(String.valueOf(replacement));
-
-        if (isOxidizable(replacement.getClass())) {
+        if (!world.isClient && replacement.toString().contains("copper")) {
             world.setBlockState(pos, replacement);
         }
     }
