@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import java.util.Optional;
 
 @Mixin(Degradable.class)
-public interface DegradableMixin<T extends Enum<T>> {
+public interface DegradableMixin {
     /**
      * @author gayasslily
      * @reason yeah, had to rewrite the logic

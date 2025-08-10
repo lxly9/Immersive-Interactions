@@ -63,9 +63,6 @@ public abstract class ItemMixin implements ToggleableFeature {
         return true;
     }
 
-
-    @Shadow @Final private static Logger LOGGER;
-
     @WrapMethod(method = "useOnBlock")
     private ActionResult immersive_interactions$useOnBlock(ItemUsageContext context, Operation<ActionResult> original) {
         ItemStack itemStack = context.getStack();

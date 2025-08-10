@@ -24,11 +24,6 @@ import static com.immersive_interactions.util.ModProperties.*;
 @Mixin(Block.class)
 public abstract class BlockMixin {
 
-    @Shadow
-    private static <T extends Comparable<T>> BlockState copyProperty(BlockState source, BlockState target, Property<T> property) {
-        return null;
-    }
-
     @Inject(method = "appendProperties", at = @At("HEAD"))
     private void addDegradationProperty(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
         if (this instanceof Oxidizable) {
