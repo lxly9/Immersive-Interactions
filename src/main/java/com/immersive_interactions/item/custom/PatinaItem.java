@@ -41,7 +41,7 @@ public class PatinaItem extends Item {
                 world.syncWorldEvent(WorldEvents.BLOCK_SCRAPED, pos, 0);
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
             }
-            return ActionResult.success(degradation < 3);
+            return ActionResult.success(degradation < 3 && !state.get(WAXED));
         }else {
             return super.useOnBlock(context);
         }

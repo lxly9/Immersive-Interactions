@@ -16,6 +16,7 @@
     "copper.DegradableMixin",
     "copper.DoorBlockMixin",
     "copper.GrateBlockMixin",
+    "copper.HoneycombItemMixin",
     "copper.SlabBlockMixin",
     "copper.StairsBlockMixin",
     "copper.TrapdoorBlockMixin",

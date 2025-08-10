@@ -15,6 +15,8 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -46,7 +48,18 @@ import static com.immersive_interactions.util.DyeMatcher.dyedBlockMatcher;
 import static com.immersive_interactions.util.WoodTransformationHelper.transformLogToWood;
 
 @Mixin(Item.class)
-public abstract class ItemMixin {
+public abstract class ItemMixin implements ToggleableFeature {
+
+    @Shadow
+    private final RegistryEntry.Reference<Item> registryEntry = Registries.ITEM.createEntry((Item) (Object) this);
+
+    @Unique
+    public boolean isEnabled(FeatureSet enabledFeatures) {
+        String key = registryEntry.getKey().get().toString();
+        return !key.matches(".*(exposed_|weathered_|oxidized_|waxed_).*");
+    }
+
+
     @Shadow @Final private static Logger LOGGER;
 
     @WrapMethod(method = "useOnBlock")

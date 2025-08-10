@@ -45,10 +45,13 @@ public abstract class BlockMixin {
     @WrapMethod(method = "onPlaced")
     private void changePlacedBlock(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack, Operation<Void> original) {
         Block block = state.getBlock();
-        BlockState replacement = getCopper(state, block);
+        if (isOxidizable(block.getClass())){
+            BlockState replacement = getCopper(state, block);
+            String newCopper = replacement.toString();
+            if (!world.isClient  && !newCopper.matches(".*(exposed_|weathered_|oxidized_|waxed_|ore|raw)*.")) {
+                world.setBlockState(pos, replacement);
+            }
 
-        if (!world.isClient && replacement.toString().contains("copper")) {
-            world.setBlockState(pos, replacement);
         }
     }
 

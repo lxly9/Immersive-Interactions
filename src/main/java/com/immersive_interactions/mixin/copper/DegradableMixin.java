@@ -21,8 +21,8 @@ public interface DegradableMixin<T extends Enum<T>> {
     default void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockState currentState = world.getBlockState(pos);
 
-        if (currentState.get(ModProperties.WAXED)) return;
-        int degradationLevel = currentState.get(ModProperties.DEGRADATION);
+        if (state.get(ModProperties.WAXED)) return;
+        int degradationLevel = state.get(ModProperties.DEGRADATION);
         if (degradationLevel >= 3) return;
 
         Optional<BlockState> degraded = ((Degradable<?>) this).tryDegrade(state, world, pos, random);

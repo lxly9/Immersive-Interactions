@@ -50,9 +50,6 @@ public class ImmersiveInteractions implements ModInitializer {
 		Registries.BLOCK.forEach(block -> {
 			if (isOxidizable(block.getClass())) {
 				BlockState defaultState = block.getDefaultState();
-				if (block.getName().toString().contains(".*(exposed_|weathered_|oxidized_)*.")){
-					return;
-				}
 
 				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
 					defaultState = defaultState.with(WAXED, false).with(DEGRADATION, 0);
