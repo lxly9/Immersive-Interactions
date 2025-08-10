@@ -1,20 +1,25 @@
 package com.immersive_interactions.mixin.copper;
 
+import com.immersive_interactions.item.ModItems;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.immersive_interactions.ImmersiveInteractions.*;
 import static com.immersive_interactions.util.ModProperties.*;
@@ -45,6 +50,17 @@ public abstract class BlockMixin {
                 world.setBlockState(pos, replacement);
             }
 
+        }
+    }
+
+    @Inject(method = "afterBreak", at = @At("HEAD"))
+    private void dropPatina(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool, CallbackInfo ci) {
+        if (!world.isClient && !player.isCreative() && state.contains(DEGRADATION)) {
+            int degradation = state.get(DEGRADATION);
+
+            if (degradation > 0) {
+                Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
+            }
         }
     }
 
