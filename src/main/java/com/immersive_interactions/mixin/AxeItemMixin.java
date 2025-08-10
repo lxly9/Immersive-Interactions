@@ -1,7 +1,5 @@
 package com.immersive_interactions.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
@@ -10,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +17,8 @@ import net.minecraft.world.World;
 import net.minecraft.block.Block;
 
 import com.immersive_interactions.item.ModItems;
+import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,40 +31,39 @@ import static com.immersive_interactions.util.ModProperties.*;
 @Mixin(AxeItem.class)
 public class AxeItemMixin {
 
-    @WrapMethod(method = "useOnBlock")
-    private ActionResult injectScrape(ItemUsageContext context, Operation<ActionResult> original) {
+    @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
+    private void injectScrape(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         PlayerEntity player = context.getPlayer();
         Block block = state.getBlock();
-        int degradation = state.get(DEGRADATION);
-        Identifier blockId = Registries.BLOCK.getId(block);
-        String blockIdString = blockId.toString();
+        BlockState defaultState = block.getDefaultState();
 
 
-        if (!world.isClient && isOxidizable(block.getClass()) && player != null) {
-//            Oxidizable.OxidationLevel oxidationLevel = oxidizable.getDegradationLevel();
+        if (!world.isClient && defaultState.contains(DEGRADATION) && player != null) {
+            int degradation = state.get(DEGRADATION);
             if (!state.get(WAXED) && degradation > 0){
                 if (!player.isCreative()) {
                     Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
                 }
                 BlockState newState = block.getStateWithProperties(state).with(DEGRADATION, degradation -1);
-                world.setBlockState(pos, newState);
-                return ActionResult.success(degradation > 0);
+                world.setBlockState(pos, newState, 11);
+                world.playSound(null, pos, SoundEvents.ITEM_AXE_SCRAPE, SoundCategory.BLOCKS);
+                world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
+                world.syncWorldEvent(WorldEvents.BLOCK_SCRAPED, pos, 0);
+                cir.setReturnValue(ActionResult.SUCCESS);
             }
 
             if (state.get(WAXED)){
-                BlockState newState = block.getDefaultState().with(WAXED, false);
-                world.setBlockState(pos, newState);
-                return ActionResult.success(state.get(WAXED));
+                BlockState newState = block.getStateWithProperties(state).with(WAXED, false);
+                world.setBlockState(pos, newState, 11);
+                world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS);
+                world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
+                world.syncWorldEvent(WorldEvents.WAX_REMOVED, pos, 0);
+                cir.setReturnValue(ActionResult.SUCCESS);
             }
-
-//            if (!player.isCreative() && !blockIdString.contains("waxed") && oxidationLevel.ordinal() > 0)  {
-//                Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA));
-//            }
         }
-        return original.call(context);
     }
 
     @Inject(method = "useOnBlock", at = @At("HEAD"))

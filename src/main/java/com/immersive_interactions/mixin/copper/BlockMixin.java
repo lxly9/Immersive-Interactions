@@ -1,5 +1,7 @@
 package com.immersive_interactions.mixin.copper;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -40,8 +42,8 @@ public abstract class BlockMixin {
         }
     }
 
-    @Inject(method = "onPlaced", at = @At("TAIL"))
-    private void changePlacedBlock(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack, CallbackInfo ci) {
+    @WrapMethod(method = "onPlaced")
+    private void changePlacedBlock(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack, Operation<Void> original) {
         Block block = state.getBlock();
         BlockState replacement = getCopper(state, block);
 

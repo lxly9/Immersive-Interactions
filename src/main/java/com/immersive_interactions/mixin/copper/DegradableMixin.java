@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface DegradableMixin<T extends Enum<T>> {
     /**
      * @author gayasslily
-     * @reason yeah, just had to rip this shit out :(
+     * @reason yeah, had to rewrite the logic
      */
     @Overwrite
     default void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, Random random) {
