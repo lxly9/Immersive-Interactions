@@ -13,7 +13,7 @@
   "tag.block.immersive_interactions.mossable_blocks": "Can be mossed",
   "tag.block.immersive_interactions.crackable_blocks": "Can be cracked",
   "tag.block.immersive_interactions.slimable_blocks": "Can be slimed",
-  "tag.block.immersive_interactions.amethystable_blocks": "Can be amethysted",
+  "tag.block.immersive_interactions.amethystable_blocks": "Can have amethyst applied",
   "tag.block.immersive_interactions.chiselable_blocks": "Can be chiseled",
   "tooltip.item.immersive_interactions.copper_patina": "Used to age copper blocks",
   "tooltip.item.immersive_interactions.chisel": "Used to chisel blocks",
@@ -21,5 +21,5 @@
   "tag.item.immersive_interactions.can_wax_blocks": "Used to wax blocks",
   "tag.block.immersive_interactions.waxable_blocks": "Can be waxed",
   "tooltip.item.immersive_interactions.dye": "Used to dye blocks",
-  "tag.block.immersive_interactions.oxidizable_blocks": "Can oxidize"
+  "tag.block.immersive_interactions.oxidizable_blocks": "Will oxidize over time"
 }

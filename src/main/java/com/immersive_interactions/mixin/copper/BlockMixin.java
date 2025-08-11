@@ -13,13 +13,12 @@ import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.immersive_interactions.ImmersiveInteractions.*;
 import static com.immersive_interactions.util.ModProperties.*;
@@ -27,17 +26,29 @@ import static com.immersive_interactions.util.ModProperties.*;
 @Mixin(Block.class)
 public abstract class BlockMixin {
 
+    @Shadow protected abstract Block asBlock();
+
     @Inject(method = "appendProperties", at = @At("HEAD"))
-    private void addDegradationProperty(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
+    private void addProperties(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
+        Identifier blockId = Registries.BLOCK.getId(this.asBlock());
+        String path = blockId.getPath();
+
         if (this instanceof Oxidizable) {
             builder.add(DEGRADATION);
             builder.add(WAXED);
         }
 
-        if (isModLoaded("copperrails") && isInstanceOf(this, "com.copperrails.block.OxidizableCopperRailBlock")) {
+        if (isModLoaded("copperrails") && isInstanceOf(this, "com.copperrails.blockId.OxidizableCopperRailBlock")) {
             builder.add(DEGRADATION);
             builder.add(WAXED);
         }
+
+//        if (!path.startsWith("cracked_")) {
+//            Identifier crackedId = Identifier.of(blockId.getNamespace(), "cracked_" + path);
+//            if (Registries.BLOCK.containsId(crackedId)) {
+//                builder.add(CRACKED);
+//            }
+//        }
     }
 
     @WrapMethod(method = "onPlaced")
@@ -66,37 +77,38 @@ public abstract class BlockMixin {
 
     @Unique
     public BlockState getCopper(BlockState state, Block block) {
-            var id = Registries.BLOCK.getId(block);
-            String path = id.getPath();
+        var id = Registries.BLOCK.getId(block);
+        String path = id.getPath();
 
-            if (path.contains("copper")) {
-                boolean waxed = path.contains("waxed");
+        if (path.contains("copper")) {
+            boolean waxed = path.contains("waxed");
 
-                int degradation = 0;
-                if (path.contains("exposed")) degradation = 1;
-                else if (path.contains("weathered")) degradation = 2;
-                else if (path.contains("oxidized")) degradation = 3;
+            int degradation = 0;
+            if (path.contains("exposed")) degradation = 1;
+            else if (path.contains("weathered")) degradation = 2;
+            else if (path.contains("oxidized")) degradation = 3;
 
-                String basePath = path
-                        .replace("waxed_", "")
-                        .replace("exposed_", "")
-                        .replace("weathered_", "")
-                        .replace("oxidized_", "");
+            String basePath = path
+                    .replace("waxed_", "")
+                    .replace("exposed_", "")
+                    .replace("weathered_", "")
+                    .replace("oxidized_", "");
 
-                Block baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), basePath));
+            Block baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), basePath));
 
-                if (baseBlock == Blocks.AIR) {
-                    String altBasePath = basePath + "_block";
-                    baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), altBasePath));
-                }
-
-                if (baseBlock != Blocks.AIR) {
-                    return baseBlock.getStateWithProperties(state).with(WAXED, waxed).with(DEGRADATION, degradation);
-                }
-
+            if (baseBlock == Blocks.AIR) {
+                String altBasePath = basePath + "_block";
+                baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), altBasePath));
             }
+
+            if (baseBlock != Blocks.AIR) {
+                return baseBlock.getStateWithProperties(state).with(WAXED, waxed).with(DEGRADATION, degradation);
+            }
+
+        }
         return state;
     }
+
 }
 
 
