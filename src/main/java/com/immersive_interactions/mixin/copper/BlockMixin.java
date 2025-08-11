@@ -46,10 +46,10 @@ public abstract class BlockMixin {
         if (isOxidizable(block.getClass())){
             BlockState replacement = getCopper(state, block);
             String newCopper = replacement.toString();
+
             if (!world.isClient  && !newCopper.matches(".*(exposed_|weathered_|oxidized_|waxed_|ore|raw)*.")) {
                 world.setBlockState(pos, replacement);
             }
-
         }
     }
 
