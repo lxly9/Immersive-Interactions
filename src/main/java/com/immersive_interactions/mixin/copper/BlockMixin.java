@@ -64,12 +64,17 @@ public abstract class BlockMixin {
     }
 
     @Inject(method = "afterBreak", at = @At("HEAD"))
-    private void dropPatina(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool, CallbackInfo ci) {
-        if (!world.isClient && !player.isCreative() && state.contains(DEGRADATION)) {
+    private void dropItems(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool, CallbackInfo ci) {
+        if (!world.isClient && !player.isCreative()) {
+            if (state.contains(DEGRADATION)) {
             int degradation = state.get(DEGRADATION);
 
-            if (degradation > 0) {
-                Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
+                if (degradation > 0) {
+                    Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
+                }
+            }
+            if (state.getBlock().getName().toString().contains("mossy")) {
+                Block.dropStack(world, pos, new ItemStack(ModItems.MOSS_CLUMP));
             }
         }
     }

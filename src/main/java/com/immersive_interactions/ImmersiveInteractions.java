@@ -29,10 +29,10 @@ public class ImmersiveInteractions implements ModInitializer {
 		ModItems.registerModItems();
 		applyBlockStates();
 //		registerChunkReplacement();
-		Path outputDir = FabricLoader.getInstance().getGameDir().resolve("generated_blockstates");
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(
-				new CopperBlockStateReloadListener(outputDir)
-		);
+//		Path outputDir = FabricLoader.getInstance().getGameDir().resolve("generated_blockstates");
+//		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(
+//				new CopperBlockStateReloadListener(outputDir)
+//		);
 	}
 
 	private void applyBlockStates() {
@@ -79,10 +79,54 @@ public class ImmersiveInteractions implements ModInitializer {
 		return false;
 	}
 
+	public static boolean hasUncrackedVariant(String path, Identifier blockId) {
+		if (path.startsWith("cracked_")) {
+			String uncrackedPath = path.substring("cracked_".length());
+			Identifier uncrackedId = Identifier.of(blockId.getNamespace(), uncrackedPath);
+			return Registries.BLOCK.containsId(uncrackedId);
+		}
+		return false;
+	}
+
 	public static boolean hasMossyVariant(String path, Identifier blockId) {
 		if (!path.startsWith("mossy_")) {
 			Identifier mossyId = Identifier.of(blockId.getNamespace(), "mossy_" + path);
 			return Registries.BLOCK.containsId(mossyId);
+		}
+		return false;
+	}
+
+	public static boolean hasUnmossedVariant(String path, Identifier blockId) {
+		if (path.startsWith("mossy_")) {
+			String unmossedPath = path.substring("mossy_".length());
+			Identifier unmossedId = Identifier.of(blockId.getNamespace(), unmossedPath);
+			return Registries.BLOCK.containsId(unmossedId);
+		}
+		return false;
+	}
+
+	public static boolean hasChiseledVariant(String path, Identifier blockId) {
+		if (!path.startsWith("chiseled_")) {
+			if (path.contains("copper_block")) {
+				Identifier chiseledId = Identifier.of(blockId.getNamespace(), "chiseled_" + path.replace("_block", ""));
+				return Registries.BLOCK.containsId(chiseledId);
+			}
+			Identifier chiseledId = Identifier.of(blockId.getNamespace(), "chiseled_" + path);
+			return Registries.BLOCK.containsId(chiseledId);
+		}
+		return false;
+	}
+
+	public static boolean hasUnchiseledVariant(String path, Identifier blockId) {
+		if (path.startsWith("chiseled_")) {
+			if (path.contains("chiseled_copper")) {
+				String unchiseledPath = path.substring("chiseled_".length());
+				Identifier unchiseledId = Identifier.of(blockId.getNamespace(), unchiseledPath + "_block");
+				return Registries.BLOCK.containsId(unchiseledId);
+			}
+			String unchiseledPath = path.substring("chiseled_".length());
+			Identifier unchiseledId = Identifier.of(blockId.getNamespace(), unchiseledPath);
+			return Registries.BLOCK.containsId(unchiseledId);
 		}
 		return false;
 	}
