@@ -54,8 +54,15 @@ public abstract class ItemMixin implements ToggleableFeature {
     @Unique
     public boolean isEnabled(FeatureSet enabledFeatures) {
         if ((Object) this instanceof BlockItem) {
-            String key = registryEntry.getKey().get().toString();
-            return !key.matches(".*(exposed_|weathered_|oxidized_|waxed_|cracked_|mossy_).*");
+            var key = registryEntry.getKey().get();
+            Identifier blockId = key.getValue();
+            String path = blockId.getPath();
+
+            if (path.equals("chiseled_bookshelf")) {
+                return true;
+            }
+
+            return !(path.matches(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUnchiseledVariant(path, blockId) || hasUncrackedVariant(path, blockId) || hasUnmossedVariant(path, blockId));
         }
         return true;
     }
@@ -136,11 +143,12 @@ public abstract class ItemMixin implements ToggleableFeature {
 
                 }
                 //Unchisel
-                if (hasUnchiseledVariant(path, blockId)) {
+                if (hasUnchiseledVariant(path, blockId) && !state.contains(Properties.SLOT_0_OCCUPIED)) {
                     if (path.contains("chiseled_copper")) {
                         String unchiseledPath = path.substring("chiseled_".length());
                         Block unchiseledId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), unchiseledPath + "_block"));
                         world.setBlockState(pos, unchiseledId.getStateWithProperties(state));
+
                     } else {
                         Block unchiseledId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), path.replace("chiseled_", "")));
 
