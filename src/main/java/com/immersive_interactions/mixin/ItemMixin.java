@@ -20,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -75,52 +76,58 @@ public abstract class ItemMixin implements ToggleableFeature {
 
         if (!world.isClient){
             ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+
+            //Crack
             if (itemStack.getItem() instanceof PickaxeItem && hasCrackedVariant(path, blockId)) {
                 Block crackedId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), "cracked_" + path));
 
-                world.setBlockState(pos, crackedId.getStateWithProperties(state));
+                world.setBlockState(pos, crackedId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_DEEPSLATE_BRICKS_HIT, SoundCategory.BLOCKS);
                 context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(), item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+            //Uncrack
             if (itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK) && hasUncrackedVariant(path, blockId)) {
                 Block unCrackedId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), path.replace("cracked_", "")));
 
-                world.setBlockState(pos, unCrackedId.getStateWithProperties(state));
+                world.setBlockState(pos, unCrackedId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_MUD_STEP, SoundCategory.BLOCKS);
                 context.getStack().decrementUnlessCreative(1, player);
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+            //Moss
             if (itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS) && hasMossyVariant(path, blockId)) {
                 Block mossyId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), "mossy_" + path));
 
-                world.setBlockState(pos, mossyId.getStateWithProperties(state));
+                world.setBlockState(pos, mossyId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_MOSS_HIT, SoundCategory.BLOCKS);
                 context.getStack().decrementUnlessCreative(1, player);
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+            //Unmoss
             if (itemStack.getItem() instanceof ShearsItem && hasUnmossedVariant(path, blockId)) {
                 Block unmossedID = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), path.replace("mossy_", "")));
 
-                world.setBlockState(pos, unmossedID.getStateWithProperties(state));
+                world.setBlockState(pos, unmossedID.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS);
                 Block.dropStack(world, pos, new ItemStack(ModItems.MOSS_CLUMP));
                 context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(), item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+            //Chisel
             if (itemStack.getItem() instanceof ChiselItem) {
                 if (hasChiseledVariant(path, blockId))  {
                     if (path.contains("copper_block")) {
                         Block chiseledId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), "chiseled_" + path.replace("_block", "")));
-                        world.setBlockState(pos, chiseledId.getStateWithProperties(state));
+                        world.setBlockState(pos, chiseledId.getStateWithProperties(state), 11);
                     } else {
                         Block chiseledId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), "chiseled_" + path));
 
-                        world.setBlockState(pos, chiseledId.getStateWithProperties(state));
+                        world.setBlockState(pos, chiseledId.getStateWithProperties(state), 11);
                     }
                     world.playSound(null, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
                     context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(), item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
@@ -128,6 +135,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                     return ActionResult.SUCCESS;
 
                 }
+                //Unchisel
                 if (hasUnchiseledVariant(path, blockId)) {
                     if (path.contains("chiseled_copper")) {
                         String unchiseledPath = path.substring("chiseled_".length());
@@ -136,7 +144,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                     } else {
                         Block unchiseledId = Registries.BLOCK.get(Identifier.of(blockId.getNamespace(), path.replace("chiseled_", "")));
 
-                        world.setBlockState(pos, unchiseledId.getStateWithProperties(state));
+                        world.setBlockState(pos, unchiseledId.getStateWithProperties(state), 11);
                     }
                     world.playSound(null, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
                     context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(), item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
@@ -144,58 +152,55 @@ public abstract class ItemMixin implements ToggleableFeature {
                     return ActionResult.SUCCESS;
                 }
             }
+            //Slime
             if (state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_SLIME)) {
-                if (state.getBlock() instanceof PistonBlock) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS, world);
-
-                    if (newBlock != null) {
-                        world.setBlockState(pos, newBlock.getStateWithProperties(state));
-                        world.playSound(null, pos, SoundEvents.BLOCK_SLIME_BLOCK_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrementUnlessCreative(1, player);
+                Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS, world);
+                if (newBlock != null) {
+                    if (block instanceof PistonBlock) {
+                        world.setBlockState(pos, newBlock.getStateWithProperties(state).with(Properties.EXTENDED, false), 11);
+                    } else {
+                        world.setBlockState(pos, newBlock.getStateWithProperties(state), 11);
                     }
-                } else {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.SLIMY_BLOCKS, world);
-
-                    if (newBlock != null) {
-                        world.setBlockState(pos, newBlock.getStateWithProperties(state));
-                        world.playSound(null, pos, SoundEvents.BLOCK_SLIME_BLOCK_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrementUnlessCreative(1, player);
-                    }
+                    world.playSound(null, pos, SoundEvents.BLOCK_SLIME_BLOCK_HIT, SoundCategory.BLOCKS);
+                    context.getStack().decrementUnlessCreative(1, player);
+                    return ActionResult.SUCCESS;
                 }
-                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
-                return ActionResult.success(state.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS));
             }
+            //Amethyst
             if (state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
-                    Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.AMETHYST_BLOCKS, world);
+                Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.AMETHYST_BLOCKS, world);
 
-                    if (newBlock != null) {
-                        world.setBlockState(pos, newBlock.getStateWithProperties(state));
-                        world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrementUnlessCreative(1, player);
-                    }
+                if (newBlock != null) {
+                    world.setBlockState(pos, newBlock.getStateWithProperties(state), 11);
+                    world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS);
+                    context.getStack().decrementUnlessCreative(1, player);
+                }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS));
             }
+            //Logs
             if (state.isIn(BlockTags.LOGS) && (itemStack.isIn(ModItemTagProvider.CAN_APPLY_BARK) || itemStack.isOf(barkFD))) {
-                    Block newBlock = transformLogToWood(blockIdString);
-                    String clickedWood = block.toString();
+                Block newBlock = transformLogToWood(blockIdString);
+                String clickedWood = block.toString();
 
-                    if (newBlock != null) {
-                        world.setBlockState(pos, newBlock.getStateWithProperties(state));
-                        world.playSound(null, pos, SoundEvents.BLOCK_WOOD_HIT, SoundCategory.BLOCKS);
-                        context.getStack().decrementUnlessCreative(1, player);
-                    }
+                if (newBlock != null) {
+                    world.setBlockState(pos, newBlock.getStateWithProperties(state), 11);
+                    world.playSound(null, pos, SoundEvents.BLOCK_WOOD_HIT, SoundCategory.BLOCKS);
+                    context.getStack().decrementUnlessCreative(1, player);
+                }
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
             }
+            //Dye
             if (itemStack.getItem() instanceof DyeItem) {
                 Block newBlock = dyedBlockMatcher(blockId, itemId);
+
 
                 if (newBlock != Blocks.AIR && !newBlock.toString().matches(".*(bed|shulker|banner).*")) {
                     String dyeColor = itemStack.getItem().toString().replace("dye", "");
 
                     if (!state.toString().contains(dyeColor)) {
-                        world.setBlockState(pos, newBlock.getStateWithProperties(state));
+                        world.setBlockState(pos, newBlock.getStateWithProperties(state), 11);
                         world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS);
                         context.getStack().decrementUnlessCreative(1, player);
                         world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
