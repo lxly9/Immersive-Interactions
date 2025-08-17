@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.immersive_interactions.util.ModProperties.*;
 
@@ -30,6 +28,7 @@ public class ImmersiveInteractions implements ModInitializer {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
 		applyBlockStates();
+//		registerChunkReplacement();
 		Path outputDir = FabricLoader.getInstance().getGameDir().resolve("generated_blockstates");
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(
 				new CopperBlockStateReloadListener(outputDir)
@@ -80,6 +79,14 @@ public class ImmersiveInteractions implements ModInitializer {
 		return false;
 	}
 
+	public static boolean hasMossyVariant(String path, Identifier blockId) {
+		if (!path.startsWith("mossy_")) {
+			Identifier mossyId = Identifier.of(blockId.getNamespace(), "mossy_" + path);
+			return Registries.BLOCK.containsId(mossyId);
+		}
+		return false;
+	}
+
 	public static boolean isInstanceOf(Object obj, String className) {
 		try {
 			Class<?> clazz = Class.forName(className);
@@ -88,4 +95,65 @@ public class ImmersiveInteractions implements ModInitializer {
 			return false;
 		}
 	}
+
+//	@Unique
+//	public BlockState getCopper(BlockState state, Block block) {
+//		var id = Registries.BLOCK.getId(block);
+//		String path = id.getPath();
+//
+//		if (path.contains("copper")) {
+//			boolean waxed = path.contains("waxed");
+//
+//			int degradation = 0;
+//			if (path.contains("exposed")) degradation = 1;
+//			else if (path.contains("weathered")) degradation = 2;
+//			else if (path.contains("oxidized")) degradation = 3;
+//
+//			String basePath = path
+//					.replace("waxed_", "")
+//					.replace("exposed_", "")
+//					.replace("weathered_", "")
+//					.replace("oxidized_", "");
+//
+//			Block baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), basePath));
+//
+//			if (baseBlock == Blocks.AIR) {
+//				String altBasePath = basePath + "_block";
+//				baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), altBasePath));
+//			}
+//
+//			if (baseBlock != Blocks.AIR) {
+//				return baseBlock.getStateWithProperties(state).with(WAXED, waxed).with(DEGRADATION, degradation);
+//			}
+//
+//		}
+//		return state;
+//	}
+//
+//	private void registerChunkReplacement() {
+//		ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> {
+//			if (!world.isClient) {
+//				replaceCopperInChunk(chunk);
+//			}
+//		});
+//	}
+//
+//	private void replaceCopperInChunk(WorldChunk chunk) {
+//		BlockPos.Mutable pos = new BlockPos.Mutable();
+//		for (int x = 0; x < 16; x++) {
+//			for (int y = chunk.getBottomY(); y < chunk.getTopY(); y++) {
+//				for (int z = 0; z < 16; z++) {
+//					pos.set(chunk.getPos().getStartX() + x, y, chunk.getPos().getStartZ() + z);
+//					BlockState state = chunk.getBlockState(pos);
+//					if (isOxidizable(state.getBlock().getClass())) {
+//						BlockState replacement = getCopper(state, state.getBlock());
+//						String newCopper = replacement.toString();
+//						if (!newCopper.matches(".*(ore|raw).*")) {
+//							chunk.getWorld().setBlockState(pos, replacement, 3);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 }

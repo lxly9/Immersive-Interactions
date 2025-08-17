@@ -10,6 +10,7 @@
     "ChestBoatItemMixin",
     "ItemMixin",
     "MinecartEntityMixin",
+    "SimpleRegistryMixin",
     "VehicleEntityMixin",
     "copper.BlockMixin",
     "copper.BulbBlockMixin",
@@ -20,6 +21,7 @@
     "copper.SlabBlockMixin",
     "copper.StairsBlockMixin",
     "copper.TrapdoorBlockMixin",
+    "copper.WallBlockMixin",
     "copper.compat.PoweredRailBlockMixin"
   ],
   "injectors": {

@@ -30,8 +30,7 @@ public abstract class BlockMixin {
 
     @Inject(method = "appendProperties", at = @At("HEAD"))
     private void addProperties(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
-        Identifier blockId = Registries.BLOCK.getId(this.asBlock());
-        String path = blockId.getPath();
+        Block self = (Block)(Object)this;
 
         if (this instanceof Oxidizable) {
             builder.add(DEGRADATION);
@@ -58,7 +57,7 @@ public abstract class BlockMixin {
             BlockState replacement = getCopper(state, block);
             String newCopper = replacement.toString();
 
-            if (!world.isClient  && !newCopper.matches(".*(exposed_|weathered_|oxidized_|waxed_|ore|raw)*.")) {
+            if (!world.isClient  && !newCopper.matches(".*(exposed_|weathered_|oxidized_|waxed_|ore|raw).*")) {
                 world.setBlockState(pos, replacement);
             }
         }
@@ -108,7 +107,6 @@ public abstract class BlockMixin {
         }
         return state;
     }
-
 }
 
 
