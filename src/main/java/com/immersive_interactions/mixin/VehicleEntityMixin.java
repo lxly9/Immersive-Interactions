@@ -17,12 +17,14 @@ public class VehicleEntityMixin {
     private void killAndDropItem(Item selfAsItem, CallbackInfo ci) {
         VehicleEntity vehicleEntity = (VehicleEntity) (Object) this;
         String mineCartItem = selfAsItem.asItem().toString();
-        String blockInCart = mineCartItem.replace("minecart", "");
-        vehicleEntity.kill();
-        if (blockInCart.contains("_")){
-            vehicleEntity.dropItem(Registries.ITEM.get(Identifier.of(blockInCart.replace("_", ""))));
+        if (mineCartItem.contains("minecart")) {
+            String blockInCart = mineCartItem.replace("minecart", "");
+            vehicleEntity.kill();
+            if (blockInCart.contains("_")){
+                vehicleEntity.dropItem(Registries.ITEM.get(Identifier.of(blockInCart.replace("_", ""))));
+            }
+            vehicleEntity.dropItem(Items.MINECART);
+            ci.cancel();
         }
-        vehicleEntity.dropItem(Items.MINECART);
-        ci.cancel();
     }
 }

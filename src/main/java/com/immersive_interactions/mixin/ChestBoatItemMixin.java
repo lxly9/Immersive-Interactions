@@ -16,7 +16,7 @@ public abstract class ChestBoatItemMixin {
     @Inject(method = "killAndDropSelf", at = @At("HEAD"), cancellable = true)
     private void killAndDropSelf(DamageSource source, CallbackInfo ci) {
         ChestBoatEntity chestBoat = (ChestBoatEntity) (Object) this;
-        String variantString = chestBoat.asItem().toString().toLowerCase().replace("chest_", "");
+        String variantString = chestBoat.asItem().toString().replace("chest_", "");
 
         chestBoat.dropItem(Registries.ITEM.get(Identifier.of(variantString)));
         chestBoat.dropItem(Items.CHEST);
