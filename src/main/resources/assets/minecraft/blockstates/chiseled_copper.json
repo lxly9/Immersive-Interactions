@@ -1,0 +1,16 @@
+{
+  "variants": {
+    ",degradation=0": {
+      "model": "minecraft:block/chiseled_copper"
+    },
+    ",degradation=1": {
+      "model": "minecraft:block/exposed_chiseled_copper"
+    },
+    ",degradation=2": {
+      "model": "minecraft:block/weathered_chiseled_copper"
+    },
+    ",degradation=3": {
+      "model": "minecraft:block/oxidized_chiseled_copper"
+    }
+  }
+}
