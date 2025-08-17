@@ -23,10 +23,10 @@ public class WoodTransformationHelper {
         if (blocksInTag == null) return null;
 
         for (RegistryEntry<Block> entry : blocksInTag) {
-            Block tagBlock = entry.value();
-            String tagBlockId = Registries.BLOCK.getId(tagBlock).toString();
+            Block Block = entry.value();
+            String tagBlockId = Registries.BLOCK.getId(Block).toString();
             if (tagBlockId.endsWith(variant)) {
-                return tagBlock;
+                return Block;
             }
         }
         return null;

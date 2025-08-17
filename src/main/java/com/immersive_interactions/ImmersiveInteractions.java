@@ -2,18 +2,14 @@ package com.immersive_interactions;
 
 import com.immersive_interactions.item.ModItems;
 import com.immersive_interactions.mixin.BlockAccessor;
-import com.immersive_interactions.util.CopperBlockStateReloadListener;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 
 import static com.immersive_interactions.util.ModProperties.*;
 

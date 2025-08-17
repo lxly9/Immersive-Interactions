@@ -26,7 +26,6 @@ import static com.immersive_interactions.util.ModProperties.*;
 @Mixin(Block.class)
 public abstract class BlockMixin {
 
-    @Shadow protected abstract Block asBlock();
 
     @Inject(method = "appendProperties", at = @At("HEAD"))
     private void addProperties(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
