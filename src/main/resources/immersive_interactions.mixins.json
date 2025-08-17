@@ -10,7 +10,6 @@
     "ChestBoatItemMixin",
     "ItemMixin",
     "MinecartEntityMixin",
-    "SimpleRegistryMixin",
     "VehicleEntityMixin",
     "copper.BlockMixin",
     "copper.BulbBlockMixin",
