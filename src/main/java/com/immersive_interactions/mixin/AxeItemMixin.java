@@ -34,7 +34,6 @@ public class AxeItemMixin {
         BlockState state = world.getBlockState(pos);
         PlayerEntity player = context.getPlayer();
         Block block = state.getBlock();
-        BlockState defaultState = block.getDefaultState();
 
 
         if (!world.isClient && state.getBlock() instanceof Oxidizable oxidizable && player != null) {
