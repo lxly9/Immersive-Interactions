@@ -1,7 +1,6 @@
 package com.immersive_interactions;
 
 import com.immersive_interactions.item.ModItems;
-import com.immersive_interactions.mixin.BlockAccessor;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
@@ -9,9 +8,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import static com.immersive_interactions.util.ModProperties.*;
 
 
 public class ImmersiveInteractions implements ModInitializer {
@@ -24,11 +20,6 @@ public class ImmersiveInteractions implements ModInitializer {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
 		applyBlockStates();
-//		registerChunkReplacement();
-//		Path outputDir = FabricLoader.getInstance().getGameDir().resolve("generated_blockstates");
-//		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(
-//				new CopperBlockStateReloadListener(outputDir)
-//		);
 	}
 
 	private void applyBlockStates() {
@@ -36,25 +27,6 @@ public class ImmersiveInteractions implements ModInitializer {
 			Identifier blockId = Registries.BLOCK.getId(block);
 			String path = blockId.getPath();
 			BlockState defaultState = block.getDefaultState();
-
-			if (isOxidizable(block.getClass())) {
-
-				if (defaultState.contains(WAXED) && defaultState.contains(DEGRADATION)) {
-					defaultState = defaultState.with(WAXED, false).with(DEGRADATION, 0);
-				}
-
-				((BlockAccessor) block).callSetDefaultState(defaultState);
-			}
-
-//			if (hasCrackedVariant(path, blockId)); {
-//
-//				if (defaultState.contains(CRACKED)) {
-//					defaultState = defaultState.with(CRACKED, false);
-//				}
-//
-//				((BlockAccessor) block).callSetDefaultState(defaultState);
-//
-//			}
 		});
 	}
 
@@ -64,7 +36,7 @@ public class ImmersiveInteractions implements ModInitializer {
 
 	public static boolean isOxidizable(Class<?> clazz) {
 		String className = clazz.getSimpleName().toLowerCase();
-		return className.contains("oxidizable") && !className.equals("oxidizable");
+		return className.contains("oxidizable");
 	}
 
 	public static boolean hasCrackedVariant(String path, Identifier blockId) {
@@ -135,65 +107,4 @@ public class ImmersiveInteractions implements ModInitializer {
 			return false;
 		}
 	}
-
-//	@Unique
-//	public BlockState getCopper(BlockState state, Block block) {
-//		var id = Registries.BLOCK.getId(block);
-//		String path = id.getPath();
-//
-//		if (path.contains("copper")) {
-//			boolean waxed = path.contains("waxed");
-//
-//			int degradation = 0;
-//			if (path.contains("exposed")) degradation = 1;
-//			else if (path.contains("weathered")) degradation = 2;
-//			else if (path.contains("oxidized")) degradation = 3;
-//
-//			String basePath = path
-//					.replace("waxed_", "")
-//					.replace("exposed_", "")
-//					.replace("weathered_", "")
-//					.replace("oxidized_", "");
-//
-//			Block baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), basePath));
-//
-//			if (baseBlock == Blocks.AIR) {
-//				String altBasePath = basePath + "_block";
-//				baseBlock = Registries.BLOCK.get(Identifier.of(id.getNamespace(), altBasePath));
-//			}
-//
-//			if (baseBlock != Blocks.AIR) {
-//				return baseBlock.getStateWithProperties(state).with(WAXED, waxed).with(DEGRADATION, degradation);
-//			}
-//
-//		}
-//		return state;
-//	}
-//
-//	private void registerChunkReplacement() {
-//		ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> {
-//			if (!world.isClient) {
-//				replaceCopperInChunk(chunk);
-//			}
-//		});
-//	}
-//
-//	private void replaceCopperInChunk(WorldChunk chunk) {
-//		BlockPos.Mutable pos = new BlockPos.Mutable();
-//		for (int x = 0; x < 16; x++) {
-//			for (int y = chunk.getBottomY(); y < chunk.getTopY(); y++) {
-//				for (int z = 0; z < 16; z++) {
-//					pos.set(chunk.getPos().getStartX() + x, y, chunk.getPos().getStartZ() + z);
-//					BlockState state = chunk.getBlockState(pos);
-//					if (isOxidizable(state.getBlock().getClass())) {
-//						BlockState replacement = getCopper(state, state.getBlock());
-//						String newCopper = replacement.toString();
-//						if (!newCopper.matches(".*(ore|raw).*")) {
-//							chunk.getWorld().setBlockState(pos, replacement, 3);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
 }

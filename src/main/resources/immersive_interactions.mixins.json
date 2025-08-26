@@ -11,17 +11,7 @@
     "ItemMixin",
     "MinecartEntityMixin",
     "VehicleEntityMixin",
-    "copper.BlockMixin",
-    "copper.BulbBlockMixin",
-    "copper.DegradableMixin",
-    "copper.DoorBlockMixin",
-    "copper.GrateBlockMixin",
-    "copper.HoneycombItemMixin",
-    "copper.SlabBlockMixin",
-    "copper.StairsBlockMixin",
-    "copper.TrapdoorBlockMixin",
-    "copper.WallBlockMixin",
-    "copper.compat.PoweredRailBlockMixin"
+    "BlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

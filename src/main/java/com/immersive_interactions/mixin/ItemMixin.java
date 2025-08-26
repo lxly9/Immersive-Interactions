@@ -36,13 +36,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
 import static com.immersive_interactions.ImmersiveInteractions.*;
 import static com.immersive_interactions.util.BlockTransformationHelper.*;
 import static com.immersive_interactions.util.DyeMatcher.dyedBlockMatcher;
-import static com.immersive_interactions.util.ModProperties.*;
 import static com.immersive_interactions.util.WoodTransformationHelper.transformLogToWood;
 
 @Mixin(Item.class)
@@ -287,10 +287,10 @@ public abstract class ItemMixin implements ToggleableFeature {
             if (isModLoaded("waxed_workstations") && optional.isPresent()) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
-            if (blockState.contains(WAXED) || itemString.contains("sign")) {
+            if (isOxidizable(block.getClass()) || itemString.contains("sign")) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
-            if (blockState.contains(DEGRADATION)) {
+            if (isOxidizable(block.getClass())) {
                     tooltip.add(Text.translatable("tag.block.immersive_interactions.oxidizable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
             }
         }

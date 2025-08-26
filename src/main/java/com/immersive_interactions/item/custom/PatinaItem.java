@@ -2,6 +2,7 @@ package com.immersive_interactions.item.custom;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Oxidizable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,8 +14,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
-import static com.immersive_interactions.util.ModProperties.*;
-
 public class PatinaItem extends Item {
     public PatinaItem(Settings settings) {
         super(settings);
@@ -25,23 +24,22 @@ public class PatinaItem extends Item {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
-        Block block = state.getBlock();
-        BlockState defaultState = block.getDefaultState();
+        Block clickedBlock = state.getBlock();
 
-        if (!world.isClient && defaultState.contains(DEGRADATION)) {
-            int degradation = state.get(DEGRADATION);
+        if (!world.isClient && clickedBlock instanceof Oxidizable oxidizable) {
+            ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+            Oxidizable.OxidationLevel oxidationLevel = oxidizable.getDegradationLevel();
 
-            if (degradation < 3 && !state.get(WAXED)) {
-                ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
-                BlockState nextState = block.getStateWithProperties(state).with(DEGRADATION, degradation + 1);
+            if (oxidationLevel.ordinal() < Oxidizable.OxidationLevel.values().length - 1) {
+                BlockState nextState = oxidizable.getDegradationResult(state).orElse(state);
 
                 world.setBlockState(pos, nextState);
                 context.getStack().decrementUnlessCreative(1, player);
                 world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS);
                 world.syncWorldEvent(WorldEvents.BLOCK_SCRAPED, pos, 0);
-                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
             }
-            return ActionResult.success(degradation < 3 && !state.get(WAXED));
+            world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
+            return ActionResult.success(oxidationLevel.ordinal() < 3);
         }else {
             return super.useOnBlock(context);
         }
