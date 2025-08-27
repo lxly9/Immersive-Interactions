@@ -10,6 +10,7 @@ import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -53,9 +54,6 @@ public abstract class AbstractBlockMixin {
         }
     }
 
-    /**
-     * Reroute explosion drops.
-     */
     @Inject(method = "onExploded", at = @At("HEAD"), cancellable = true)
     private void rerouteOnExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger, CallbackInfo ci) {
         if (REROUTING.get()) return;
@@ -93,8 +91,13 @@ public abstract class AbstractBlockMixin {
                     Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
                 }
 
-                if (hasVariant(path, "chiseled_", false)) {
+                if (hasUnchiseledVariant(path)) {
                     Block.dropStacks(Blocks.COPPER_BLOCK.getStateWithProperties(state), world, pos, be, entity, tool);
+                    return true;
+                }
+
+                if (path.contains("waxed")) {
+                    Block.dropStacks(path.replace("waxed_","").getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }
 
@@ -103,7 +106,7 @@ public abstract class AbstractBlockMixin {
             } finally {
                 REROUTING.set(false);
             }
-        } else if (hasVariant(path, "mossy_", false)) {
+        } else if (hasUnmossedVariant(path)) {
             REROUTING.set(true);
             try {Block unvariantId = getBlockVariant("mossy_", path);
                 if (unvariantId != null) {
@@ -114,7 +117,7 @@ public abstract class AbstractBlockMixin {
             } finally {
                 REROUTING.set(false);
             }
-        } else if (hasVariant(path, "cracked_", false)) {
+        } else if (hasUncrackedVariant(path)) {
             REROUTING.set(true);
             LOGGER.info("yes");
             try {Block unvariantId = getBlockVariant("cracked_", path);
@@ -125,10 +128,10 @@ public abstract class AbstractBlockMixin {
             } finally {
                 REROUTING.set(false);
             }
-        } else if (hasVariant(path, "chiseled_", false)) {
+        } else if (hasUnchiseledVariant(path)) {
             REROUTING.set(true);
             try {Block unvariantId = getBlockVariant("chiseled_", path);
-                if (unvariantId != null) {
+                if (unvariantId != null && !state.get(Properties.SLOT_0_OCCUPIED)) {
                     Block.dropStacks(unvariantId.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }

@@ -23,6 +23,7 @@ public class ImmersiveInteractions implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
+		applyBlockStates();
 	}
 
 	private void applyBlockStates() {
@@ -42,34 +43,96 @@ public class ImmersiveInteractions implements ModInitializer {
 		return className.contains("oxidizable");
 	}
 
-	public static boolean hasVariant(String path, String prefix, boolean forward) {
-		if (path == null || path.isEmpty()) return false;
+	public static boolean hasCrackedVariant(String path) {
 
-		Identifier originalId = Identifier.tryParse(path);
-		if (originalId == null) return false;
-
-		String basePath = originalId.getPath();
-
-		String targetPath;
-		if (forward) {
-			if (prefix.equals("chiseled_") && path.contains("copper_block")) {
-				targetPath = "chiseled_copper";
-			} else {
-				targetPath = prefix + basePath;
-			}
-		} else {
-			if (!basePath.startsWith(prefix)) return false;
-			targetPath = basePath.substring(prefix.length());
-
-			if (prefix.equals("chiseled_") && basePath.startsWith("chiseled_copper")) {
-				targetPath = "copper_block";
-			}
-		}
+		String targetPath = "cracked_" + path;
 
 		for (Identifier id : Registries.BLOCK.getIds()) {
 			if (id.getPath().equals(targetPath)) {
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public static boolean hasUncrackedVariant(String path) {
+		if (path == null || path.isEmpty()) return false;
+
+		String targetPath;
+		if (path.contains("cracked_")) {
+			targetPath = path.replace("cracked_", "");
+			for (Identifier id : Registries.BLOCK.getIds()) {
+				if (id.getPath().equals(targetPath)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean hasMossyVariant(String path) {
+
+		String targetPath = "mossy_" + path;
+
+		for (Identifier id : Registries.BLOCK.getIds()) {
+			if (id.getPath().equals(targetPath)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean hasUnmossedVariant(String path) {
+		if (path == null || path.isEmpty()) return false;
+
+		String targetPath;
+		if (path.contains("mossy_")) {
+			targetPath = path.replace("mossy_", "");
+			for (Identifier id : Registries.BLOCK.getIds()) {
+				if (id.getPath().equals(targetPath)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean hasChiseledVariant(String path) {
+		if (path == null || path.isEmpty()) return false;
+
+		if (path.contains("chiseled_")) return false;
+
+		String targetPath;
+		if (path.contains("copper_block")) {
+			targetPath = path.replace("copper_block", "chiseled_copper");
+		} else if (path.matches(".*(exposed_|weathered_|oxidized_).*")){
+			targetPath = path.replace("_copper","_chiseled_copper");
+		} else {
+			targetPath = "chiseled_" + path;
+		}
+
+		for (Identifier id : Registries.BLOCK.getIds()) {
+			if (id.getPath().equals(targetPath)) return true;
+		}
+		return false;
+	}
+
+	public static boolean hasUnchiseledVariant(String path) {
+		if (path == null || path.isEmpty()) return false;
+
+		if (!path.contains("chiseled_")) return false;
+
+		String basePath = path.replace("chiseled_","");
+
+		String targetPath;
+		if ((!path.matches(".*(exposed_|weathered_|oxidized_).*") && path.contains("copper"))) {
+			targetPath = basePath + "_block";
+		} else {
+			targetPath = basePath;
+		}
+
+		for (Identifier id : Registries.BLOCK.getIds()) {
+			if (id.getPath().equals(targetPath)) return true;
 		}
 		return false;
 	}
@@ -118,16 +181,13 @@ public class ImmersiveInteractions implements ModInitializer {
 	public static Block getBlockVariant(String prefix, String path) {
 		if (path == null || path.isEmpty()) return null;
 
-		Identifier originalId = Identifier.tryParse(path);
-		if (originalId == null) return null;
-
 		String targetPath;
-		if (originalId.getPath().contains(prefix)) {
-			targetPath = originalId.getPath().substring(prefix.length());
+		if (path.startsWith(prefix)) {
+			targetPath = path.substring(prefix.length());
 		} else if (prefix.equals("chiseled_") && path.contains("copper_block")) {
 			targetPath = "copper";
 		} else {
-			targetPath = originalId.getPath();
+			targetPath = path;
 		}
 
 		for (Identifier id : Registries.BLOCK.getIds()) {
@@ -137,5 +197,15 @@ public class ImmersiveInteractions implements ModInitializer {
 		}
 
 		return null;
+	}
+
+	public static Block getBlockByName(String name) {
+		for (Block block : Registries.BLOCK) {
+			Identifier id = Registries.BLOCK.getId(block);
+			if (id.getPath().equals(name)) {
+				return block;
+			}
+		}
+		return Blocks.AIR;
 	}
 }
