@@ -5,9 +5,13 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 
 public class ImmersiveInteractions implements ModInitializer {
@@ -19,7 +23,6 @@ public class ImmersiveInteractions implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
-		applyBlockStates();
 	}
 
 	private void applyBlockStates() {
@@ -39,62 +42,34 @@ public class ImmersiveInteractions implements ModInitializer {
 		return className.contains("oxidizable");
 	}
 
-	public static boolean hasCrackedVariant(String path) {
-		if (!path.startsWith("cracked_")) {
-			Identifier crackedId = Identifier.of("cracked_" + path);
-			return Registries.BLOCK.containsId(crackedId);
-		}
-		return false;
-	}
+	public static boolean hasVariant(String path, String prefix, boolean forward) {
+		if (path == null || path.isEmpty()) return false;
 
-	public static boolean hasUncrackedVariant(String path) {
-		if (path.startsWith("cracked_")) {
-			String uncrackedPath = path.substring("cracked_".length());
-			Identifier uncrackedId = Identifier.of(uncrackedPath);
-			return Registries.BLOCK.containsId(uncrackedId);
-		}
-		return false;
-	}
+		Identifier originalId = Identifier.tryParse(path);
+		if (originalId == null) return false;
 
-	public static boolean hasMossyVariant(String path) {
-		if (!path.startsWith("mossy_")) {
-			Identifier mossyId = Identifier.of("mossy_" + path);
-			return Registries.BLOCK.containsId(mossyId);
-		}
-		return false;
-	}
+		String basePath = originalId.getPath();
 
-	public static boolean hasUnmossedVariant(String path) {
-		if (path.startsWith("mossy_")) {
-			String unmossedPath = path.substring("mossy_".length());
-			Identifier unmossedId = Identifier.of(unmossedPath);
-			return Registries.BLOCK.containsId(unmossedId);
-		}
-		return false;
-	}
-
-	public static boolean hasChiseledVariant(String path) {
-		if (!path.startsWith("chiseled_")) {
-			if (path.contains("copper_block")) {
-				Identifier chiseledId = Identifier.of("chiseled_" + path.replace("_block", ""));
-				return Registries.BLOCK.containsId(chiseledId);
+		String targetPath;
+		if (forward) {
+			if (prefix.equals("chiseled_") && path.contains("copper_block")) {
+				targetPath = "chiseled_copper";
+			} else {
+				targetPath = prefix + basePath;
 			}
-			Identifier chiseledId = Identifier.of("chiseled_" + path);
-			return Registries.BLOCK.containsId(chiseledId);
-		}
-		return false;
-	}
+		} else {
+			if (!basePath.startsWith(prefix)) return false;
+			targetPath = basePath.substring(prefix.length());
 
-	public static boolean hasUnchiseledVariant(String path) {
-		if (path.startsWith("chiseled_")) {
-			if (path.contains("chiseled_copper")) {
-				String unchiseledPath = path.substring("chiseled_".length());
-				Identifier unchiseledId = Identifier.of(unchiseledPath + "_block");
-				return Registries.BLOCK.containsId(unchiseledId);
+			if (prefix.equals("chiseled_") && basePath.startsWith("chiseled_copper")) {
+				targetPath = "copper_block";
 			}
-			String unchiseledPath = path.substring("chiseled_".length());
-			Identifier unchiseledId = Identifier.of(unchiseledPath);
-			return Registries.BLOCK.containsId(unchiseledId);
+		}
+
+		for (Identifier id : Registries.BLOCK.getIds()) {
+			if (id.getPath().equals(targetPath)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -106,5 +81,61 @@ public class ImmersiveInteractions implements ModInitializer {
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
+	}
+
+	public static Text joinWithAnd(List<Text> variants) {
+		if (variants.isEmpty()) {
+			return Text.empty();
+		}
+
+		if (variants.size() == 1) {
+			return variants.get(0);
+		}
+
+		if (variants.size() == 2) {
+			return Text.empty()
+					.append(variants.get(0))
+					.append(" ")
+					.append(Text.translatable("tooltip.immersive_interactions.and"))
+					.append(" ")
+					.append(variants.get(1));
+		}
+
+		MutableText result = Text.empty();
+		for (int i = 0; i < variants.size(); i++) {
+			if (i > 0) {
+				if (i == variants.size() - 1) {
+					result.append(" ").append(Text.translatable("tooltip.immersive_interactions.and")).append(" ");
+				} else {
+					result.append(", ");
+				}
+			}
+			result.append(variants.get(i));
+		}
+		return result;
+	}
+
+	public static Block getBlockVariant(String prefix, String path) {
+		if (path == null || path.isEmpty()) return null;
+
+		Identifier originalId = Identifier.tryParse(path);
+		if (originalId == null) return null;
+
+		String targetPath;
+		if (originalId.getPath().contains(prefix)) {
+			targetPath = originalId.getPath().substring(prefix.length());
+		} else if (prefix.equals("chiseled_") && path.contains("copper_block")) {
+			targetPath = "copper";
+		} else {
+			targetPath = originalId.getPath();
+		}
+
+		for (Identifier id : Registries.BLOCK.getIds()) {
+			if (id.getPath().equals(targetPath)) {
+				return Registries.BLOCK.get(id);
+			}
+		}
+
+		return null;
 	}
 }

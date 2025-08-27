@@ -21,6 +21,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -35,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,7 +63,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 return true;
             }
 
-            return !(path.matches(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUnchiseledVariant(path) || hasUncrackedVariant(path) || hasUnmossedVariant(path));
+            return !(path.matches(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasVariant(path, "cracked_",false) || hasVariant(path, "mossy_",false) || hasVariant(path, "chiseled_",false));
         }
         return true;
     }
@@ -84,8 +86,8 @@ public abstract class ItemMixin implements ToggleableFeature {
             ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
 
             //Crack
-            if (itemStack.getItem() instanceof PickaxeItem && hasCrackedVariant(path)) {
-                Block crackedId = Registries.BLOCK.get(Identifier.of("cracked_" + path));
+            if (itemStack.getItem() instanceof PickaxeItem && hasVariant(path, "cracked_", true)) {
+                Block crackedId = getBlockVariant("cracked_", path);
 
                 world.setBlockState(pos, crackedId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_DEEPSLATE_BRICKS_HIT, SoundCategory.BLOCKS);
@@ -94,7 +96,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 return ActionResult.SUCCESS;
             }
             //Uncrack
-            if (itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK) && hasUncrackedVariant(path)) {
+            if (itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK) && hasVariant(path, "cracked_", false)) {
                 Block unCrackedId = Registries.BLOCK.get(Identifier.of(path.replace("cracked_", "")));
 
                 world.setBlockState(pos, unCrackedId.getStateWithProperties(state), 11);
@@ -104,7 +106,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 return ActionResult.SUCCESS;
             }
             //Moss
-            if (itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS) && hasMossyVariant(path)) {
+            if (itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS) && hasVariant(path, "mossy_", true)) {
                 Block mossyId = Registries.BLOCK.get(Identifier.of("mossy_" + path));
 
                 world.setBlockState(pos, mossyId.getStateWithProperties(state), 11);
@@ -114,7 +116,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 return ActionResult.SUCCESS;
             }
             //Unmoss
-            if (itemStack.getItem() instanceof ShearsItem && hasUnmossedVariant(path)) {
+            if (itemStack.getItem() instanceof ShearsItem && hasVariant(path, "mossy_", false)) {
                 Block unmossedID = Registries.BLOCK.get(Identifier.of(path.replace("mossy_", "")));
 
                 world.setBlockState(pos, unmossedID.getStateWithProperties(state), 11);
@@ -126,7 +128,7 @@ public abstract class ItemMixin implements ToggleableFeature {
             }
             //Chisel
             if (itemStack.getItem() instanceof ChiselItem) {
-                if (hasChiseledVariant(path))  {
+                if (hasVariant(path, "chiseled_", true))  {
                     if (path.contains("copper_block")) {
                         Block chiseledId = Registries.BLOCK.get(Identifier.of("chiseled_" + path.replace("_block", "")));
                         world.setBlockState(pos, chiseledId.getStateWithProperties(state), 11);
@@ -142,7 +144,7 @@ public abstract class ItemMixin implements ToggleableFeature {
 
                 }
                 //Unchisel
-                if (hasUnchiseledVariant(path) && !state.contains(Properties.SLOT_0_OCCUPIED)) {
+                if (hasVariant(path, "chiseled_", false) && !state.contains(Properties.SLOT_0_OCCUPIED)) {
                     if (path.contains("chiseled_copper")) {
                         String unchiseledPath = path.substring("chiseled_".length());
                         Block unchiseledId = Registries.BLOCK.get(Identifier.of(unchiseledPath + "_block"));
@@ -261,36 +263,47 @@ public abstract class ItemMixin implements ToggleableFeature {
         }
 
         if (stack.getItem() instanceof BlockItem) {
-            String itemString = stack.getItem().toString();
-            Block block = Registries.BLOCK.get(Identifier.of(itemString));
-            Identifier blockId = Registries.BLOCK.getId(block);
-            String path = blockId.getPath();
+            Block block = ((BlockItem) stack.getItem()).getBlock();
             BlockState blockState = block.getDefaultState();
-            Optional<RegistryEntry<PointOfInterestType>> optional = PointOfInterestTypes.getTypeForState(blockState);
+            List<Text> variants = new ArrayList<>();
 
-            if (hasMossyVariant(path)) {
-                tooltip.add(Text.translatable("tag.block.immersive_interactions.mossable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            // Build variant list
+            if (hasVariant(Registries.BLOCK.getId(block).getPath(), "cracked_", true)) {
+                variants.add(Text.translatable("tag.block.immersive_interactions.crackable_blocks"));
             }
-            if (hasCrackedVariant(path)) {
-                tooltip.add(Text.translatable("tag.block.immersive_interactions.crackable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            if (hasVariant(Registries.BLOCK.getId(block).getPath(), "mossy_", true)) {
+                variants.add(Text.translatable("tag.block.immersive_interactions.mossable_blocks"));
             }
-            if (hasChiseledVariant(path)) {
-                tooltip.add(Text.translatable("tag.block.immersive_interactions.chiselable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            if (hasVariant(Registries.BLOCK.getId(block).getPath(), "chiseled_", true)) {
+                variants.add(Text.translatable("tag.block.immersive_interactions.chiselable_blocks"));
             }
             if (blockState.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS)) {
-                tooltip.add(Text.translatable("tag.block.immersive_interactions.slimable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+                variants.add(Text.translatable("tag.block.immersive_interactions.slimable_blocks"));
             }
             if (blockState.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS)) {
-                tooltip.add(Text.translatable("tag.block.immersive_interactions.amethystable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+                variants.add(Text.translatable("tag.block.immersive_interactions.amethystable_blocks"));
             }
+
+            Optional<RegistryEntry<PointOfInterestType>> optional = PointOfInterestTypes.getTypeForState(blockState);
             if (isModLoaded("waxed_workstations") && optional.isPresent()) {
-                    tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+                variants.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks"));
             }
-            if (isOxidizable(block.getClass()) || itemString.contains("sign")) {
-                    tooltip.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+            if (isOxidizable(block.getClass()) || stack.getItem().toString().contains("sign")) {
+                variants.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks"));
             }
+
+            if (!variants.isEmpty()) {
+                MutableText tooltipLine = Text.translatable("tooltip.immersive_interactions.can_be")
+                        .formatted(Formatting.ITALIC, Formatting.DARK_GRAY)
+                        .append(" ")
+                        .append(joinWithAnd(variants));
+
+                tooltip.add(tooltipLine);
+            }
+
             if (isOxidizable(block.getClass())) {
-                    tooltip.add(Text.translatable("tag.block.immersive_interactions.oxidizable_blocks").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.oxidizable_blocks")
+                        .formatted(Formatting.ITALIC, Formatting.DARK_GRAY));
             }
         }
     }
