@@ -54,16 +54,20 @@ public abstract class ItemMixin implements ToggleableFeature {
 
     @Unique
     public boolean isEnabled(FeatureSet enabledFeatures) {
+        var key = registryEntry.getKey().get();
+        Identifier Id = key.getValue();
+        String path = Id.getPath();
+
         if ((Object) this instanceof BlockItem) {
-            var key = registryEntry.getKey().get();
-            Identifier blockId = key.getValue();
-            String path = blockId.getPath();
 
             if (path.equals("chiseled_bookshelf")) {
                 return true;
             }
 
             return !(path.matches(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUncrackedVariant(path) || hasUnmossedVariant(path) || hasUnchiseledVariant(path));
+        }
+        if ((Object) this instanceof Item){
+            return !((path.contains("_minecart") && !path.equals("minecart")) || path.matches(".*(chest_|cannon_)(boat|raft).*"));
         }
         return true;
     }

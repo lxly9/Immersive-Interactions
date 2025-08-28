@@ -141,8 +141,7 @@ public class ImmersiveInteractions implements ModInitializer {
 
 	public static boolean isInstanceOf(Object obj, String className) {
 		try {
-			Class<?> clazz = Class.forName(className);
-			return clazz.isInstance(obj);
+			return Class.forName(className).isInstance(obj);
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
@@ -220,7 +219,17 @@ public class ImmersiveInteractions implements ModInitializer {
 				return type;
 			}
 		}
-		return EntityType.MINECART;
+		return null;
+	}
+
+	public static EntityType<?> getBoatEntityByName(String name) {
+		for (EntityType<?> type : Registries.ENTITY_TYPE) {
+			Identifier id = Registries.ENTITY_TYPE.getId(type);
+			if (id.getPath().equals(name)) {
+				return type;
+			}
+		}
+		return null;
 	}
 
 	public static Item getItemByName(String name) {

@@ -26,9 +26,9 @@ public abstract class MinecartEntityMixin {
 
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     private void onInteract(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        ItemStack item = player.getStackInHand(hand);
+        ItemStack itemStack = player.getStackInHand(hand);
 
-        if (item.getItem() instanceof BlockItem blockItem) {
+        if (itemStack.getItem() instanceof BlockItem blockItem) {
             Block block = blockItem.getBlock();
             MinecartEntity mineCart = (MinecartEntity) (Object) this;
             World world = mineCart.getWorld();
@@ -38,14 +38,11 @@ public abstract class MinecartEntityMixin {
                 if (newMinecart != null) {
                     mineCart.discard();
                     world.spawnEntity(newMinecart);
-
-                    if (!player.getAbilities().creativeMode) {
-                        item.decrement(1);
-                    }
+                    itemStack.decrementUnlessCreative(1, player);
 
                     cir.setReturnValue(ActionResult.SUCCESS);
+                    world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, mineCart.getPos(), GameEvent.Emitter.of(player));
                 }
-                world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, mineCart.getPos(), GameEvent.Emitter.of(player));
             }
         }
     }
@@ -61,15 +58,18 @@ public abstract class MinecartEntityMixin {
         String mineCartEntity = Registries.BLOCK.getId(block).getPath() + "_minecart";
         EntityType<?> type = getMinecartByName(mineCartEntity);
 
-        Entity entity = type.create(world);
-        if (!(entity instanceof AbstractMinecartEntity newCart)) {
-            return oldCart;
+
+        if (type != null) {
+            Entity entity = type.create(world);
+            if (!(entity instanceof AbstractMinecartEntity newCart)) {
+                return oldCart;
+            }
+
+            newCart.refreshPositionAndAngles(x, y, z, yaw, 0.0f);
+            newCart.setVelocity(velocity);
+
+            return newCart;
         }
-
-        newCart.refreshPositionAndAngles(x, y, z, yaw, 0.0f);
-        newCart.setVelocity(velocity);
-
-        return newCart;
+        return null;
     }
-
 }

@@ -2,7 +2,7 @@
 	"schemaVersion": 1,
 	"id": "immersive_interactions",
 	"version": "${version}",
-	"name": "Lily's Vanilla: Immersive Interactions",
+	"name": "Immersive Interactions",
 	"description": "Reduced variants through in-world interactions!",
 	"authors": [
 		"gayasslily"
@@ -33,12 +33,12 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21.1",
+		"fabricloader": ">=0.17.2",
+		"minecraft": "1.21.1",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
+		"another-mod": "waxed_workstations"
 	}
 }

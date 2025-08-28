@@ -1,16 +1,19 @@
 package com.immersive_interactions.mixin;
 
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.immersive_interactions.ImmersiveInteractions.getItemByName;
+import static com.immersive_interactions.ImmersiveInteractions.*;
 
 @Mixin (VehicleEntity.class)
 public class VehicleEntityMixin {
@@ -19,10 +22,22 @@ public class VehicleEntityMixin {
     private void killAndDropItem(Item selfAsItem, CallbackInfo ci) {
         VehicleEntity vehicleEntity = (VehicleEntity) (Object) this;
         String blockInCart = Registries.ITEM.getId(selfAsItem).getPath().replace("_minecart", "");
+        String blockInBoat = Registries.ITEM.getId(selfAsItem).getPath().replace("_boat", "");
         vehicleEntity.kill();
-        vehicleEntity.dropItem(getItemByName(blockInCart));
         if (vehicleEntity instanceof AbstractMinecartEntity) {
+            vehicleEntity.dropItem(getItemByName(blockInCart));
             vehicleEntity.dropItem(Items.MINECART);
+        } else if (vehicleEntity instanceof ChestBoatEntity) {
+            String variantString = selfAsItem.toString().replace("chest_", "");
+
+            vehicleEntity.dropItem(Registries.ITEM.get(Identifier.of(variantString)));
+            vehicleEntity.dropItem(Items.CHEST);
+        } else if (isModLoaded("supplementaries") && selfAsItem.toString().contains("cannon_boat")) {
+            String variantString = Registries.ITEM.getId(selfAsItem).getPath().replace("cannon_boat_", "") + "_boat";
+            LOGGER.info(variantString);
+
+            vehicleEntity.dropItem(getItemByName(variantString));
+            vehicleEntity.dropItem(getItemByName("cannon"));
         } else {
             vehicleEntity.dropItem(selfAsItem);
         }
