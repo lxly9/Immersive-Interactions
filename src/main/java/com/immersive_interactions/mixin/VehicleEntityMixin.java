@@ -1,5 +1,6 @@
 package com.immersive_interactions.mixin;
 
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
@@ -24,24 +25,25 @@ public class VehicleEntityMixin {
         VehicleEntity vehicleEntity = (VehicleEntity) (Object) this;
         String blockInCart = Registries.ITEM.getId(selfAsItem).getPath().replace("_minecart", "");
         String blockInBoat = Registries.ITEM.getId(selfAsItem).getPath().replace("_boat", "");
+
         BoatEntity boatEntity = (BoatEntity) vehicleEntity;
-        String boatVariant = boatEntity.getVariant().toString();
-        LOGGER.info(boatVariant);
+        BoatEntity.Type variant = boatEntity.getVariant();
+        BoatEntity newBoat = new BoatEntity(EntityType.BOAT, boatEntity.getWorld());
+        newBoat.setVariant(variant);
+        Item boatItem = newBoat.asItem();
 
         vehicleEntity.kill();
         if (vehicleEntity instanceof AbstractMinecartEntity) {
+
             vehicleEntity.dropItem(getItemByName(blockInCart));
             vehicleEntity.dropItem(Items.MINECART);
         } else if (vehicleEntity instanceof ChestBoatEntity) {
-            String variantString = selfAsItem.toString().replace("chest_", "");
 
-            vehicleEntity.dropItem(Registries.ITEM.get(Identifier.of(variantString)));
+            vehicleEntity.dropItem(boatItem);
             vehicleEntity.dropItem(Items.CHEST);
         } else if (isModLoaded("supplementaries") && selfAsItem.toString().contains("cannon_boat")) {
-            String variantString = Registries.ITEM.getId(selfAsItem).getPath().replace("cannon_boat_", "") + "_boat";
-            LOGGER.info(variantString);
 
-            vehicleEntity.dropItem(getItemByName(variantString));
+            vehicleEntity.dropItem(boatItem);
             vehicleEntity.dropItem(getItemByName("cannon"));
         } else {
             vehicleEntity.dropItem(selfAsItem);
