@@ -154,7 +154,7 @@ public class ImmersiveInteractions implements ModInitializer {
 		}
 
 		if (variants.size() == 1) {
-			return variants.get(0);
+			return variants.getFirst();
 		}
 
 		if (variants.size() == 2) {
@@ -216,7 +216,7 @@ public class ImmersiveInteractions implements ModInitializer {
 	public static EntityType<?> getMinecartByName(String name) {
 		for (EntityType<?> type : Registries.ENTITY_TYPE) {
 			Identifier id = Registries.ENTITY_TYPE.getId(type);
-			if (id != null && id.getPath().equals(name)) {
+			if (id.getPath().equals(name)) {
 				return type;
 			}
 		}
@@ -226,7 +226,7 @@ public class ImmersiveInteractions implements ModInitializer {
 	public static Item getItemByName(String name) {
 		for (Item item : Registries.ITEM) {
 			Identifier id = Registries.ITEM.getId(item);
-			if (id != null && id.getPath().equals(name)) {
+			if (id.getPath().equals(name)) {
 				return item;
 			}
 		}
