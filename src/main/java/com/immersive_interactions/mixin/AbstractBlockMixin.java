@@ -57,7 +57,7 @@ public abstract class AbstractBlockMixin {
     @Inject(method = "onExploded", at = @At("HEAD"), cancellable = true)
     private void rerouteOnExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger, CallbackInfo ci) {
         if (REROUTING.get()) return;
-        if (state.getBlock().shouldDropItemsOnExplosion(explosion) && world instanceof ServerWorld serverWorld) {
+        if (state.getBlock().shouldDropItemsOnExplosion(explosion) && world instanceof ServerWorld) {
             if (tryReroute(state, world, pos, world.getBlockEntity(pos), explosion.getEntity(), ItemStack.EMPTY)) {
 
                 world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
