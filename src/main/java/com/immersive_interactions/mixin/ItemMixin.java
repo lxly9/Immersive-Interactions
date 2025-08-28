@@ -9,6 +9,8 @@ import com.immersive_interactions.util.DynamicEntityTooltipHelper;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.block.*;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
@@ -37,10 +39,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.immersive_interactions.ImmersiveInteractions.*;
 import static com.immersive_interactions.util.BlockTransformationHelper.*;
@@ -71,6 +70,29 @@ public abstract class ItemMixin implements ToggleableFeature {
             return !((path.contains("_minecart") && !path.equals("minecart")) || path.matches(".*(chest_|cannon_)(boat|raft).*"));
         }
         return true;
+    }
+
+    @Shadow @Final @Mutable
+    private ComponentMap components;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void makeBoatsAndMinecartsStackable(Item.Settings settings, CallbackInfo ci) {
+        Item self = (Item) (Object) this;
+        int newStackSize = -1;
+
+        if (self instanceof BoatItem) {
+            newStackSize = 16;
+        } else if (self instanceof MinecartItem) {
+            newStackSize = 16;
+        }
+
+        if (newStackSize > 0) {
+            ComponentMap override = ComponentMap.builder()
+                    .add(DataComponentTypes.MAX_STACK_SIZE, newStackSize)
+                    .build();
+
+            components = ComponentMap.of(components, override);
+        }
     }
 
     @WrapMethod(method = "useOnBlock")
