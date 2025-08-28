@@ -4,6 +4,9 @@ import com.immersive_interactions.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -23,7 +26,6 @@ public class ImmersiveInteractions implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Loaded Immersive Interactions");
 		ModItems.registerModItems();
-		applyBlockStates();
 	}
 
 	private void applyBlockStates() {
@@ -186,6 +188,8 @@ public class ImmersiveInteractions implements ModInitializer {
 			targetPath = path.substring(prefix.length());
 		} else if (prefix.equals("chiseled_") && path.contains("copper_block")) {
 			targetPath = "copper";
+		} else if (path.equals("chiseled_copper")) {
+			targetPath = "copper_block";
 		} else {
 			targetPath = path;
 		}
@@ -207,5 +211,25 @@ public class ImmersiveInteractions implements ModInitializer {
 			}
 		}
 		return Blocks.AIR;
+	}
+
+	public static EntityType<?> getMinecartByName(String name) {
+		for (EntityType<?> type : Registries.ENTITY_TYPE) {
+			Identifier id = Registries.ENTITY_TYPE.getId(type);
+			if (id != null && id.getPath().equals(name)) {
+				return type;
+			}
+		}
+		return EntityType.MINECART;
+	}
+
+	public static Item getItemByName(String name) {
+		for (Item item : Registries.ITEM) {
+			Identifier id = Registries.ITEM.getId(item);
+			if (id != null && id.getPath().equals(name)) {
+				return item;
+			}
+		}
+		return Items.AIR;
 	}
 }

@@ -75,15 +75,30 @@ public abstract class AbstractBlockMixin {
 
         if (REROUTING.get()) return false;
 
-        if (path.startsWith("waxed_")) {
+        if (path.contains("waxed_")) {
             REROUTING.set(true);
 
             LOGGER.info(path);
             try {
-                String unWaxed = path.replace("waxed_","");
-                Block unWaxedBlock = getBlockByName(unWaxed);
+                int degradation = 0;
+                if (path.contains("exposed")) degradation = 1;
+                else if (path.contains("weathered")) degradation = 2;
+                else if (path.contains("oxidized")) degradation = 3;
 
-                if (unWaxedBlock != null) {
+                if (degradation > 0) {
+                    Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
+                }
+
+                String unWaxed = path.replace("waxed_","");
+                if (unWaxed.equals("chiseled_copper")) {
+                    unWaxed = "copper_block";
+                } else {
+                    unWaxed = unWaxed.replace("chiseled_","");
+                }
+                Block unWaxedBlock = getBlockByName(unWaxed);
+                LOGGER.info(String.valueOf(unWaxedBlock));
+
+                if (unWaxedBlock != Blocks.AIR) {
                     Block.dropStacks(Oxidizable.getUnaffectedOxidationBlock(unWaxedBlock).getStateWithProperties(state), world, pos, be, entity, tool);
                 }
                 return true;
