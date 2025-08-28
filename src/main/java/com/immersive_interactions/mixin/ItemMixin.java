@@ -5,6 +5,7 @@ import com.immersive_interactions.datagen.ModItemTagProvider;
 import com.immersive_interactions.item.ModItems;
 import com.immersive_interactions.item.custom.ChiselItem;
 import com.immersive_interactions.item.custom.PatinaItem;
+import com.immersive_interactions.util.DynamicEntityTooltipHelper;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.block.*;
@@ -271,12 +272,13 @@ public abstract class ItemMixin implements ToggleableFeature {
             tooltip.add(Text.translatable("tooltip.item.immersive_interactions.dye").formatted(Formatting.ITALIC).formatted(Formatting.DARK_GRAY));
         }
 
+        DynamicEntityTooltipHelper.addEntityInteractionTooltip(stack, tooltip);
+
         if (stack.getItem() instanceof BlockItem) {
             Block block = ((BlockItem) stack.getItem()).getBlock();
             BlockState blockState = block.getDefaultState();
             List<Text> variants = new ArrayList<>();
 
-            // Build a variant list
             if (hasCrackedVariant(Registries.BLOCK.getId(block).getPath())) {
                 variants.add(Text.translatable("tag.block.immersive_interactions.crackable_blocks"));
             }

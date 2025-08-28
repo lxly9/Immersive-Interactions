@@ -20,9 +20,14 @@ public class VehicleEntityMixin {
 
     @Inject(method = "killAndDropItem", at = @At("HEAD"), cancellable = true)
     private void killAndDropItem(Item selfAsItem, CallbackInfo ci) {
+        LOGGER.info(String.valueOf(selfAsItem));
         VehicleEntity vehicleEntity = (VehicleEntity) (Object) this;
         String blockInCart = Registries.ITEM.getId(selfAsItem).getPath().replace("_minecart", "");
         String blockInBoat = Registries.ITEM.getId(selfAsItem).getPath().replace("_boat", "");
+        BoatEntity boatEntity = (BoatEntity) vehicleEntity;
+        String boatVariant = boatEntity.getVariant().toString();
+        LOGGER.info(boatVariant);
+
         vehicleEntity.kill();
         if (vehicleEntity instanceof AbstractMinecartEntity) {
             vehicleEntity.dropItem(getItemByName(blockInCart));
