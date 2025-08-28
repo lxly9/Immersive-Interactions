@@ -1,7 +1,6 @@
 package com.immersive_interactions.util;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -9,7 +8,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.state.property.Property;
 import net.minecraft.world.World;
 
 public class BlockTransformationHelper {
@@ -18,7 +16,6 @@ public class BlockTransformationHelper {
         Block bestMatch = null;
         int bestScore = Integer.MIN_VALUE;
 
-        boolean isInfested = blockIdString.contains("infested");
 
         DynamicRegistryManager worldRegistry = world.getRegistryManager();
         Registry<Block> blockRegistry = worldRegistry.get(RegistryKeys.BLOCK);
@@ -29,8 +26,6 @@ public class BlockTransformationHelper {
             Block tagBlock = entry.value();
             String[] tagBlockId = Registries.BLOCK.getId(tagBlock).toString().split(":");
             String tagBlockString = tagBlockId[1];
-
-            if (isInfested != tagBlockString.contains("infested")) continue;
 
             int score = 0;
 
@@ -86,9 +81,5 @@ public class BlockTransformationHelper {
             }
         }
         return dp[len1][len2];
-    }
-
-    public static <T extends Comparable<T>> BlockState copyProperty(BlockState newState, BlockState oldState, Property<T> property) {
-        return newState.with(property, oldState.get(property));
     }
 }
