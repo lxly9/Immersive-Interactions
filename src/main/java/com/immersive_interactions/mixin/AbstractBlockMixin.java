@@ -75,6 +75,23 @@ public abstract class AbstractBlockMixin {
 
         if (REROUTING.get()) return false;
 
+        if (path.startsWith("waxed_")) {
+            REROUTING.set(true);
+
+            LOGGER.info(path);
+            try {
+                String unWaxed = path.replace("waxed_","");
+                Block unWaxedBlock = getBlockByName(unWaxed);
+
+                if (unWaxedBlock != null) {
+                    Block.dropStacks(Oxidizable.getUnaffectedOxidationBlock(unWaxedBlock).getStateWithProperties(state), world, pos, be, entity, tool);
+                }
+                return true;
+            } finally {
+                REROUTING.set(false);
+            }
+        }
+
         if (isOxidizable(block.getClass())) {
             if (state.contains(DoorBlock.HALF) && state.get(DoorBlock.HALF) == DoubleBlockHalf.UPPER) {
                 return false;
@@ -93,11 +110,6 @@ public abstract class AbstractBlockMixin {
 
                 if (hasUnchiseledVariant(path)) {
                     Block.dropStacks(Blocks.COPPER_BLOCK.getStateWithProperties(state), world, pos, be, entity, tool);
-                    return true;
-                }
-
-                if (path.contains("waxed")) {
-                    Block.dropStacks(path.replace("waxed_","").getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }
 
@@ -131,7 +143,8 @@ public abstract class AbstractBlockMixin {
         } else if (hasUnchiseledVariant(path)) {
             REROUTING.set(true);
             try {Block unvariantId = getBlockVariant("chiseled_", path);
-                if (unvariantId != null && !state.get(Properties.SLOT_0_OCCUPIED)) {
+                LOGGER.info(String.valueOf(unvariantId));
+                if (unvariantId != null && !state.contains(Properties.SLOT_0_OCCUPIED)) {
                     Block.dropStacks(unvariantId.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }
