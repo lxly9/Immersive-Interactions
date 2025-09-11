@@ -46,98 +46,66 @@ public class ImmersiveInteractions implements ModInitializer {
 	}
 
 	public static boolean hasCrackedVariant(String path) {
-
-		String targetPath = "cracked_" + path;
-
-		for (Identifier id : Registries.BLOCK.getIds()) {
-			if (id.getPath().equals(targetPath)) {
-				return true;
-			}
+		if (path == null || path.isEmpty()) return false;
+		if (!path.contains("cracked_")) {
+			String crackedName;
+			crackedName = "cracked_" + path;
+			if (path.contains("copper")) crackedName = path.replace("copper", "cracked_copper");
+			return getBlockByName(crackedName) != Blocks.AIR;
 		}
 		return false;
 	}
 
 	public static boolean hasUncrackedVariant(String path) {
 		if (path == null || path.isEmpty()) return false;
-
-		String targetPath;
 		if (path.contains("cracked_")) {
-			targetPath = path.replace("cracked_", "");
-			for (Identifier id : Registries.BLOCK.getIds()) {
-				if (id.getPath().equals(targetPath)) {
-					return true;
-				}
-			}
+			String basePath = path.replace("cracked_", "");
+			return getBlockByName(basePath) != Blocks.AIR;
 		}
 		return false;
 	}
 
 	public static boolean hasMossyVariant(String path) {
-
-		String targetPath = "mossy_" + path;
-
-		for (Identifier id : Registries.BLOCK.getIds()) {
-			if (id.getPath().equals(targetPath)) {
-				return true;
-			}
+		if (path == null || path.isEmpty()) return false;
+		if (!path.contains("mossy_")) {
+			String mossyName;
+			mossyName = "mossy_" + path;
+			if (path.contains("copper")) mossyName = path.replace("copper", "mossy_copper");
+			return getBlockByName(mossyName) != Blocks.AIR;
 		}
 		return false;
 	}
 
 	public static boolean hasUnmossedVariant(String path) {
 		if (path == null || path.isEmpty()) return false;
-
-		String targetPath;
 		if (path.contains("mossy_")) {
-			targetPath = path.replace("mossy_", "");
-			for (Identifier id : Registries.BLOCK.getIds()) {
-				if (id.getPath().equals(targetPath)) {
-					return true;
-				}
-			}
+			String basePath = path.replace("mossy_", "");
+			return getBlockByName(basePath) != Blocks.AIR;
 		}
 		return false;
 	}
 
 	public static boolean hasChiseledVariant(String path) {
 		if (path == null || path.isEmpty()) return false;
-
-		if (path.contains("chiseled_")) return false;
-
-		String targetPath;
-		if (path.contains("copper_block")) {
-			targetPath = path.replace("copper_block", "chiseled_copper");
-		} else if (path.matches(".*(exposed_|weathered_|oxidized_).*")){
-			targetPath = path.replace("_copper","_chiseled_copper");
-		} else {
-			targetPath = "chiseled_" + path;
+		if (!path.contains("chiseled_")) {
+			String chiseledName;
+			chiseledName = "chiseled_" + path;
+			if (path.contains("copper")) chiseledName = path.replace("copper", "chiseled_copper");
+			return getBlockByName(chiseledName) != Blocks.AIR;
 		}
+        return false;
+    }
 
-		for (Identifier id : Registries.BLOCK.getIds()) {
-			if (id.getPath().equals(targetPath)) return true;
-		}
-		return false;
-	}
 
 	public static boolean hasUnchiseledVariant(String path) {
 		if (path == null || path.isEmpty()) return false;
-
-		if (!path.contains("chiseled_")) return false;
-
-		String basePath = path.replace("chiseled_","");
-
-		String targetPath;
-		if ((!path.matches(".*(exposed_|weathered_|oxidized_).*") && path.contains("copper"))) {
-			targetPath = basePath + "_block";
-		} else {
-			targetPath = basePath;
+		if (path.contains("chiseled_")) {
+			String basePath = path.replace("chiseled_", "");
+			return getBlockByName(basePath) != Blocks.AIR;
 		}
+        return false;
+    }
 
-		for (Identifier id : Registries.BLOCK.getIds()) {
-			if (id.getPath().equals(targetPath)) return true;
-		}
-		return false;
-	}
 
 	public static boolean isInstanceOf(Object obj, String className) {
 		try {
@@ -205,8 +173,10 @@ public class ImmersiveInteractions implements ModInitializer {
 	public static Block getBlockByName(String name) {
 		for (Block block : Registries.BLOCK) {
 			Identifier id = Registries.BLOCK.getId(block);
-			if (id.getPath().equals(name)) {
-				return block;
+			if (id.getPath().equals(name)) return block;
+			if (id.getPath().equals(name + "_block")) return block;
+			if (name.endsWith("_block")) {
+				if (id.getPath().equals(name.replace("_block", ""))) return block;
 			}
 		}
 		return Blocks.AIR;

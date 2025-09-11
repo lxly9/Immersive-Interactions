@@ -12,6 +12,7 @@ import net.minecraft.block.*;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
@@ -24,12 +25,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -100,6 +103,7 @@ public abstract class ItemMixin implements ToggleableFeature {
         ItemStack itemStack = context.getStack();
         Identifier itemId = Registries.ITEM.getId(context.getStack().getItem());
         World world = context.getWorld();
+        PlayerEntity playerEntity = context.getPlayer();
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
@@ -155,19 +159,21 @@ public abstract class ItemMixin implements ToggleableFeature {
             }
             //Chisel
             if (itemStack.getItem() instanceof ChiselItem) {
+                Block chiseledBlock;
+
                 if (hasChiseledVariant(path))  {
                     String chiseledId;
-                    if (path.contains("copper_block")) {
-                        chiseledId = path.replace("copper_block", "chiseled_copper");
-                    } else if (path.matches(".*(exposed_|weathered_|oxidized_).*")){
-                        chiseledId = path.replace("_copper","_chiseled_copper");
+                    chiseledId = "chiseled_" + path;
+
+                    if (path.contains("copper")) chiseledId = path.replace("copper","chiseled_copper");
+                    chiseledBlock = getBlockByName(chiseledId);
+
+                    if (chiseledBlock.getDefaultState().contains(Properties.HORIZONTAL_FACING) && playerEntity != null) {
+                        world.setBlockState(pos, chiseledBlock.getStateWithProperties(state).with(Properties.HORIZONTAL_FACING, playerEntity.getHorizontalFacing().getOpposite()), 11);
                     } else {
-                        chiseledId = "chiseled_" + path;
+                        world.setBlockState(pos, chiseledBlock.getStateWithProperties(state), 11);
                     }
 
-                    Block chiseledBlock = getBlockByName(chiseledId);
-
-                    world.setBlockState(pos, chiseledBlock.getStateWithProperties(state), 11);
                     world.playSound(null, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
                     context.getStack().damage(1, (ServerWorld) world, (ServerPlayerEntity) context.getPlayer(), item -> Objects.requireNonNull(context.getPlayer()).sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND));
                     world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
@@ -176,14 +182,8 @@ public abstract class ItemMixin implements ToggleableFeature {
                 }
                 //Unchisel
                 if (hasUnchiseledVariant(path) && !state.contains(Properties.SLOT_0_OCCUPIED)) {
-                    String chiseledId;
-                    if ((!path.matches(".*(exposed_|weathered_|oxidized_).*") && path.contains("copper"))) {
-                        chiseledId = path.replace("chiseled_","") + "_block";
-                    } else {
-                        chiseledId = path.replace("chiseled_","");
-                    }
 
-                    Block chiseledBlock = getBlockByName(chiseledId);
+                    chiseledBlock = getBlockByName(path.replace("chiseled_",""));
 
                     world.setBlockState(pos, chiseledBlock.getStateWithProperties(state), 11);
                     world.playSound(null, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
