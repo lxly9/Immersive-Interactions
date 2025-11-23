@@ -18,6 +18,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -57,18 +58,18 @@ public abstract class ItemMixin implements ToggleableFeature {
     public boolean isEnabled(FeatureSet enabledFeatures) {
         var key = registryEntry.getKey().get();
         Identifier Id = key.getValue();
-        String path = Id.getPath();
+        String identifier = Id.toString();
 
         if ((Object) this instanceof BlockItem) {
 
-            if (path.equals("chiseled_bookshelf")) {
+            if (identifier.contains("chiseled_bookshelf")) {
                 return true;
             }
 
-            return !(path.matches(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUncrackedVariant(path) || hasUnmossedVariant(path) || hasUnchiseledVariant(path));
+            return !(identifier.contains(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUncrackedVariant(identifier) || hasUnmossedVariant(identifier) || hasUnchiseledVariant(identifier));
         }
         if ((Object) this instanceof Item){
-            return !((path.contains("_minecart") && !path.equals("minecart")) || path.matches(".*(chest_|cannon_)(boat|raft).*"));
+            return !((identifier.contains("_minecart") && !identifier.equals("minecart")) || identifier.matches(".*(chest_|cannon_)(boat|raft).*"));
         }
         return true;
     }
@@ -106,7 +107,7 @@ public abstract class ItemMixin implements ToggleableFeature {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         Identifier blockId = Registries.BLOCK.getId(block);
-        String path = blockId.getPath();
+        String identifier = blockId.toString();
         String blockIdString = Registries.BLOCK.getId(block).toString();
         Identifier id = Identifier.of("farmersdelight", "tree_bark");
         Item barkFD = Registries.ITEM.get(id);
@@ -115,8 +116,8 @@ public abstract class ItemMixin implements ToggleableFeature {
             ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
 
             //Crack
-            if (itemStack.getItem() instanceof PickaxeItem && hasCrackedVariant(path)) {
-                Block crackedId = getBlockByName("cracked_" + path);
+            if (itemStack.getItem() instanceof PickaxeItem && hasCrackedVariant(identifier)) {
+                Block crackedId = getBlockByName("cracked_", identifier);
 
                 world.setBlockState(pos, crackedId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_DEEPSLATE_BRICKS_HIT, SoundCategory.BLOCKS);
@@ -124,9 +125,10 @@ public abstract class ItemMixin implements ToggleableFeature {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+
             //Uncrack
-            if (itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK) && hasUncrackedVariant(path)) {
-                Block unCrackedId = getBlockByName(path.replace("cracked_", ""));
+            if (itemStack.isIn(ModItemTagProvider.CAN_REPAIR_BRICK) && hasUncrackedVariant(identifier)) {
+                Block unCrackedId = getBlockByName("", identifier.replace("cracked_", ""));
 
                 world.setBlockState(pos, unCrackedId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_MUD_STEP, SoundCategory.BLOCKS);
@@ -134,9 +136,10 @@ public abstract class ItemMixin implements ToggleableFeature {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+
             //Moss
-            if (itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS) && hasMossyVariant(path)) {
-                Block mossyId = getBlockByName("mossy_" + path);
+            if (itemStack.isIn(ModItemTagProvider.CAN_APPLY_MOSS) && hasMossyVariant(identifier)) {
+                Block mossyId = getBlockByName("mossy_", identifier);
 
                 world.setBlockState(pos, mossyId.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_MOSS_HIT, SoundCategory.BLOCKS);
@@ -144,9 +147,10 @@ public abstract class ItemMixin implements ToggleableFeature {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+
             //Unmoss
-            if (itemStack.getItem() instanceof ShearsItem && hasUnmossedVariant(path)) {
-                Block unmossedID = getBlockByName(path.replace("mossy_", ""));
+            if (itemStack.getItem() instanceof ShearsItem && hasUnmossedVariant(identifier)) {
+                Block unmossedID = getBlockByName("", identifier.replace("mossy_", ""));
 
                 world.setBlockState(pos, unmossedID.getStateWithProperties(state), 11);
                 world.playSound(null, pos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS);
@@ -155,16 +159,16 @@ public abstract class ItemMixin implements ToggleableFeature {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.SUCCESS;
             }
+
             //Chisel
             if (itemStack.getItem() instanceof ChiselItem) {
                 Block chiseledBlock;
 
-                if (hasChiseledVariant(path))  {
-                    String chiseledId;
-                    chiseledId = "chiseled_" + path;
+                if (hasChiseledVariant(identifier))  {
+                    String chiseledId = identifier;
 
-                    if (path.contains("copper")) chiseledId = path.replace("copper","chiseled_copper");
-                    chiseledBlock = getBlockByName(chiseledId);
+                    if (identifier.contains("copper")) chiseledId = identifier.replace("copper","chiseled_copper");
+                    chiseledBlock = getBlockByName("chiseled_", chiseledId);
 
                     if (chiseledBlock.getDefaultState().contains(Properties.HORIZONTAL_FACING) && playerEntity != null) {
                         world.setBlockState(pos, chiseledBlock.getStateWithProperties(state).with(Properties.HORIZONTAL_FACING, playerEntity.getHorizontalFacing().getOpposite()), 11);
@@ -179,9 +183,9 @@ public abstract class ItemMixin implements ToggleableFeature {
 
                 }
                 //Unchisel
-                if (hasUnchiseledVariant(path) && !state.contains(Properties.SLOT_0_OCCUPIED)) {
+                if (hasUnchiseledVariant(identifier) && !state.contains(Properties.SLOT_0_OCCUPIED)) {
 
-                    chiseledBlock = getBlockByName(path.replace("chiseled_",""));
+                    chiseledBlock = getBlockByName("", identifier.replace("chiseled_",""));
 
                     world.setBlockState(pos, chiseledBlock.getStateWithProperties(state), 11);
                     world.playSound(null, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
@@ -205,6 +209,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                     return ActionResult.SUCCESS;
                 }
             }
+
             //Amethyst
             if (state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS) && itemStack.isIn(ModItemTagProvider.CAN_APPLY_AMETHYST)) {
                 Block newBlock = findBestMatch(blockIdString, ModBlockTagProvider.AMETHYST_BLOCKS, world);
@@ -217,6 +222,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(state.isIn(ModBlockTagProvider.AMETHYSTABLE_BLOCKS));
             }
+
             //Logs
             if (state.isIn(BlockTags.LOGS) && (itemStack.isIn(ModItemTagProvider.CAN_APPLY_BARK) || itemStack.isOf(barkFD))) {
                 Block newBlock = transformLogToWood(blockIdString);
@@ -230,6 +236,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 world.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH, pos, GameEvent.Emitter.of(player));
                 return ActionResult.success(clickedWood.contains("stripped") || clickedWood.contains("log"));
             }
+
             //Dye
             if (itemStack.getItem() instanceof DyeItem) {
                 Block newBlock = dyedBlockMatcher(blockId, itemId);
@@ -297,15 +304,16 @@ public abstract class ItemMixin implements ToggleableFeature {
         if (stack.getItem() instanceof BlockItem) {
             Block block = ((BlockItem) stack.getItem()).getBlock();
             BlockState blockState = block.getDefaultState();
+            String blockId = Registries.BLOCK.getId(block).toString();
             List<Text> variants = new ArrayList<>();
 
-            if (hasCrackedVariant(Registries.BLOCK.getId(block).getPath())) {
+            if (hasCrackedVariant(blockId)) {
                 variants.add(Text.translatable("tag.block.immersive_interactions.crackable_blocks"));
             }
-            if (hasMossyVariant(Registries.BLOCK.getId(block).getPath())) {
+            if (hasMossyVariant(blockId)) {
                 variants.add(Text.translatable("tag.block.immersive_interactions.mossable_blocks"));
             }
-            if (hasChiseledVariant(Registries.BLOCK.getId(block).getPath())) {
+            if (hasChiseledVariant(blockId)) {
                 variants.add(Text.translatable("tag.block.immersive_interactions.chiselable_blocks"));
             }
             if (blockState.isIn(ModBlockTagProvider.SLIMABLE_BLOCKS)) {
@@ -316,25 +324,21 @@ public abstract class ItemMixin implements ToggleableFeature {
             }
 
             Optional<RegistryEntry<PointOfInterestType>> optional = PointOfInterestTypes.getTypeForState(blockState);
-            if (isModLoaded("waxed_workstations") && optional.isPresent()) {
+            if (isModLoaded("waxed_workstations") && optional.isPresent() && optional.get().isIn(PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE)) {
                 variants.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks"));
             }
-            if (isOxidizable(block.getClass()) || stack.getItem().toString().contains("sign")) {
+            if (isOxidizable(block.getClass()) || stack.getItem() instanceof SignItem || stack.getItem() instanceof HangingSignItem) {
                 variants.add(Text.translatable("tag.block.immersive_interactions.waxable_blocks"));
             }
 
             if (!variants.isEmpty()) {
-                MutableText tooltipLine = Text.translatable("tooltip.immersive_interactions.can_be")
-                        .formatted(Formatting.ITALIC, Formatting.DARK_GRAY)
-                        .append(" ")
-                        .append(joinWithAnd(variants));
+                MutableText tooltipLine = Text.translatable("tooltip.immersive_interactions.can_be").formatted(Formatting.ITALIC, Formatting.DARK_GRAY).append(" ").append(joinWithAnd(variants));
 
                 tooltip.add(tooltipLine);
             }
 
             if (isOxidizable(block.getClass())) {
-                tooltip.add(Text.translatable("tag.block.immersive_interactions.oxidizable_blocks")
-                        .formatted(Formatting.ITALIC, Formatting.DARK_GRAY));
+                tooltip.add(Text.translatable("tag.block.immersive_interactions.oxidizable_blocks").formatted(Formatting.ITALIC, Formatting.DARK_GRAY));
             }
         }
     }

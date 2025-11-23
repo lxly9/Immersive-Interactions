@@ -71,32 +71,31 @@ public abstract class AbstractBlockMixin {
     private static boolean tryReroute(BlockState state, World world, BlockPos pos, BlockEntity be, Entity entity, ItemStack tool) {
         Block block = state.getBlock();
         Identifier blockId = Registries.BLOCK.getId(block);
-        String path = blockId.getPath();
+        String identifier = blockId.toString();
+        String[] path = identifier.split(":");
 
         if (REROUTING.get()) return false;
 
-        if (path.contains("waxed_")) {
+        if (path[1].contains("waxed_")) {
             REROUTING.set(true);
 
-            LOGGER.info(path);
             try {
                 int degradation = 0;
-                if (path.contains("exposed")) degradation = 1;
-                else if (path.contains("weathered")) degradation = 2;
-                else if (path.contains("oxidized")) degradation = 3;
+                if (path[1].contains("exposed")) degradation = 1;
+                else if (path[1].contains("weathered")) degradation = 2;
+                else if (path[1].contains("oxidized")) degradation = 3;
 
                 if (degradation > 0) {
                     Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
                 }
 
-                String unWaxed = path.replace("waxed_","");
+                String unWaxed = path[0] + path[1].replace("waxed_","");
                 if (unWaxed.equals("chiseled_copper")) {
-                    unWaxed = "copper_block";
+                    unWaxed = path[0] + "copper_block";
                 } else {
-                    unWaxed = unWaxed.replace("chiseled_","");
+                    unWaxed = path[0] + unWaxed.replace("chiseled_","");
                 }
-                Block unWaxedBlock = getBlockByName(unWaxed);
-                LOGGER.info(String.valueOf(unWaxedBlock));
+                Block unWaxedBlock = getBlockByName("", unWaxed);
 
                 if (unWaxedBlock != Blocks.AIR) {
                     Block.dropStacks(Oxidizable.getUnaffectedOxidationBlock(unWaxedBlock).getStateWithProperties(state), world, pos, be, entity, tool);
@@ -115,15 +114,15 @@ public abstract class AbstractBlockMixin {
             REROUTING.set(true);
             try {
                 int degradation = 0;
-                if (path.contains("exposed")) degradation = 1;
-                else if (path.contains("weathered")) degradation = 2;
-                else if (path.contains("oxidized")) degradation = 3;
+                if (path[1].contains("exposed")) degradation = 1;
+                else if (path[1].contains("weathered")) degradation = 2;
+                else if (path[1].contains("oxidized")) degradation = 3;
 
                 if (degradation > 0) {
                     Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
                 }
 
-                if (hasUnchiseledVariant(path)) {
+                if (hasUnchiseledVariant(identifier)) {
                     Block.dropStacks(Blocks.COPPER_BLOCK.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }
@@ -133,9 +132,9 @@ public abstract class AbstractBlockMixin {
             } finally {
                 REROUTING.set(false);
             }
-        } else if (hasUnmossedVariant(path)) {
+        } else if (hasUnmossedVariant(identifier)) {
             REROUTING.set(true);
-            try {Block unvariantId = getBlockVariant("mossy_", path);
+            try {Block unvariantId = getBlockVariant("mossy_", identifier);
                 if (unvariantId != null) {
                     Block.dropStacks(unvariantId.getStateWithProperties(state), world, pos, be, entity, tool);
                     Block.dropStack(world, pos, new ItemStack(ModItems.MOSS_CLUMP));
@@ -144,10 +143,9 @@ public abstract class AbstractBlockMixin {
             } finally {
                 REROUTING.set(false);
             }
-        } else if (hasUncrackedVariant(path)) {
+        } else if (hasUncrackedVariant(identifier)) {
             REROUTING.set(true);
-            LOGGER.info("yes");
-            try {Block unvariantId = getBlockVariant("cracked_", path);
+            try {Block unvariantId = getBlockVariant("cracked_", identifier);
                 if (unvariantId != null) {
                     Block.dropStacks(unvariantId.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
@@ -155,10 +153,9 @@ public abstract class AbstractBlockMixin {
             } finally {
                 REROUTING.set(false);
             }
-        } else if (hasUnchiseledVariant(path)) {
+        } else if (hasUnchiseledVariant(identifier)) {
             REROUTING.set(true);
-            try {Block unvariantId = getBlockVariant("chiseled_", path);
-                LOGGER.info(String.valueOf(unvariantId));
+            try {Block unvariantId = getBlockVariant("chiseled_", identifier);
                 if (unvariantId != null && !state.contains(Properties.SLOT_0_OCCUPIED)) {
                     Block.dropStacks(unvariantId.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
