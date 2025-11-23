@@ -35,12 +35,9 @@ public abstract class AbstractBlockMixin {
     @Unique
     private static final ThreadLocal<Boolean> REROUTING = ThreadLocal.withInitial(() -> false);
 
-    /**
-     * Reroute normal block drops from loot tables.
-     */
     @Inject(method = "getDroppedStacks", at = @At("HEAD"), cancellable = true)
     private void rerouteGetDroppedStacks(BlockState state, LootContextParameterSet.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
-        if (REROUTING.get()) return;
+        if (state.getBlock() instanceof ChiseledBookshelfBlock) return;
 
         World world = builder.getWorld();
         Vec3d origin = builder.get(LootContextParameters.ORIGIN);
@@ -49,6 +46,8 @@ public abstract class AbstractBlockMixin {
         Entity entity = builder.getOptional(LootContextParameters.THIS_ENTITY);
         ItemStack tool = builder.getOptional(LootContextParameters.TOOL);
 
+        if (REROUTING.get()) return;
+
         if (tryReroute(state, world, pos, be, entity, tool)) {
             cir.setReturnValue(Collections.emptyList());
         }
@@ -56,13 +55,14 @@ public abstract class AbstractBlockMixin {
 
     @Inject(method = "onExploded", at = @At("HEAD"), cancellable = true)
     private void rerouteOnExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger, CallbackInfo ci) {
-        if (REROUTING.get()) return;
-        if (state.getBlock().shouldDropItemsOnExplosion(explosion) && world instanceof ServerWorld) {
-            if (tryReroute(state, world, pos, world.getBlockEntity(pos), explosion.getEntity(), ItemStack.EMPTY)) {
+        if (!REROUTING.get()) {
+            if (state.getBlock().shouldDropItemsOnExplosion(explosion) && world instanceof ServerWorld) {
+                if (tryReroute(state, world, pos, world.getBlockEntity(pos), explosion.getEntity(), ItemStack.EMPTY)) {
 
-                world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-                state.getBlock().onDestroyedByExplosion(world, pos, explosion);
-                ci.cancel();
+                    world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                    state.getBlock().onDestroyedByExplosion(world, pos, explosion);
+                    ci.cancel();
+                }
             }
         }
     }
@@ -81,9 +81,9 @@ public abstract class AbstractBlockMixin {
 
             try {
                 int degradation = 0;
-                if (path[1].contains("exposed")) degradation = 1;
-                else if (path[1].contains("weathered")) degradation = 2;
-                else if (path[1].contains("oxidized")) degradation = 3;
+                if (identifier.contains("exposed")) degradation = 1;
+                else if (identifier.contains("weathered")) degradation = 2;
+                else if (identifier.contains("oxidized")) degradation = 3;
 
                 if (degradation > 0) {
                     Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
@@ -122,7 +122,7 @@ public abstract class AbstractBlockMixin {
                     Block.dropStack(world, pos, new ItemStack(ModItems.COPPER_PATINA, degradation));
                 }
 
-                if (hasUnchiseledVariant(identifier)) {
+                if (hasUnchiseledVariant(identifier) && !identifier.contains("chiseled_bookshelf")) {
                     Block.dropStacks(Blocks.COPPER_BLOCK.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }
@@ -156,10 +156,11 @@ public abstract class AbstractBlockMixin {
         } else if (hasUnchiseledVariant(identifier)) {
             REROUTING.set(true);
             try {Block unvariantId = getBlockVariant("chiseled_", identifier);
-                if (unvariantId != null && !state.contains(Properties.SLOT_0_OCCUPIED)) {
+                if (unvariantId != null) {
                     Block.dropStacks(unvariantId.getStateWithProperties(state), world, pos, be, entity, tool);
                     return true;
                 }
+                return false;
             } finally {
                 REROUTING.set(false);
             }

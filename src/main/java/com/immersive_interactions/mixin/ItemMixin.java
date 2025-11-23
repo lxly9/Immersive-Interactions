@@ -66,7 +66,7 @@ public abstract class ItemMixin implements ToggleableFeature {
                 return true;
             }
 
-            return !(identifier.contains(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUncrackedVariant(identifier) || hasUnmossedVariant(identifier) || hasUnchiseledVariant(identifier));
+            return !(identifier.matches(".*(exposed_|weathered_|oxidized_|waxed_).*") || hasUncrackedVariant(identifier) || hasUnmossedVariant(identifier) || hasUnchiseledVariant(identifier));
         }
         if ((Object) this instanceof Item){
             return !((identifier.contains("_minecart") && !identifier.equals("minecart")) || identifier.matches(".*(chest_|cannon_)(boat|raft).*"));
@@ -165,10 +165,13 @@ public abstract class ItemMixin implements ToggleableFeature {
                 Block chiseledBlock;
 
                 if (hasChiseledVariant(identifier))  {
-                    String chiseledId = identifier;
 
-                    if (identifier.contains("copper")) chiseledId = identifier.replace("copper","chiseled_copper");
-                    chiseledBlock = getBlockByName("chiseled_", chiseledId);
+                    if (identifier.contains("copper")) {
+                        String copperId = identifier.replace("copper", "chiseled_copper");
+                        chiseledBlock = getBlockByName("", copperId);
+                    } else {
+                        chiseledBlock = getBlockByName("chiseled_", identifier);
+                    }
 
                     if (chiseledBlock.getDefaultState().contains(Properties.HORIZONTAL_FACING) && playerEntity != null) {
                         world.setBlockState(pos, chiseledBlock.getStateWithProperties(state).with(Properties.HORIZONTAL_FACING, playerEntity.getHorizontalFacing().getOpposite()), 11);
