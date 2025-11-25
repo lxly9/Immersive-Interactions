@@ -195,7 +195,7 @@ public class ImmersiveInteractions implements ModInitializer {
                 if (id.toString().contains(blockId)) return block;
             }
             if (id.getPath().equals(blockId)) return block;
-            if (id.getPath().equals(blockId + "block_")) return block;
+            if (id.getPath().equals(blockId + "_block")) return block;
             if (blockId.endsWith("_block")) {
                 if (id.getPath().equals(blockId.replace("_block", ""))) return block;
             }
