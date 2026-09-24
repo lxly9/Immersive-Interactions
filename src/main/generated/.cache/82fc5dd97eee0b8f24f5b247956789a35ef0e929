@@ -1,0 +1,8 @@
+// 1.21.1	2026-09-24T13:35:26.813988	Immersive Interactions/Tags for minecraft:block
+42e69f48aa0663d4961bad8a25a4418df1741dc6 data/immersive_interactions/tags/block/cracked_blocks.json
+95affafeb88afeb7c8888ae434206104d84c4054 data/immersive_interactions/tags/block/mossable_blocks.json
+688104b951ab27a152b40884ac4d950aa569f322 data/immersive_interactions/tags/block/chiseled_blocks.json
+9c641bdb95ac984608a074f008c736b0da5b0af7 data/immersive_interactions/tags/block/mossy_blocks.json
+bc81d1d343dddb9c4dfdcef18fead5061e0a92c3 data/immersive_interactions/tags/block/crackable_blocks.json
+9e9e6593901713dbd0ccba64190c20d65988aed7 data/immersive_interactions/tags/block/dyeable_base_blocks.json
+c56393122feb3e1c62b1df9b550e874865f11f24 data/immersive_interactions/tags/block/chiselable_blocks.json

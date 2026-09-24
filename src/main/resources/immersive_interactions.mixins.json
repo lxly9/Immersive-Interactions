@@ -1,24 +1,15 @@
 {
   "required": true,
-  "package": "com.immersive_interactions.mixin",
+  "package": "com.gayasslily.immersive_interactions.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractBlockMixin",
     "AbstractSignBlockMixin",
     "AxeItemMixin",
-    "BlockAccessor",
     "BoatEntityMixin",
-    "ChestBoatItemMixin",
     "ItemMixin",
     "MinecartEntityMixin",
-    "VehicleEntityMixin",
-    "copper.BlockMixin",
-    "copper.BulbBlockMixin",
-    "copper.DegradableMixin",
-    "copper.DoorBlockMixin",
-    "copper.GrateBlockMixin",
-    "copper.SlabBlockMixin",
-    "copper.StairsBlockMixin",
-    "copper.TrapdoorBlockMixin"
+    "VehicleEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

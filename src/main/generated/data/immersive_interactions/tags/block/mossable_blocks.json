@@ -8,6 +8,7 @@
     "minecraft:stone_brick_stairs",
     "minecraft:stone_brick_slab",
     "minecraft:stone_brick_wall",
-    "minecraft:infested_stone_bricks"
+    "minecraft:infested_stone_bricks",
+    "clutternomore:stone_brick_step"
   ]
 }
