@@ -16,13 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.immersive_interactions.ImmersiveInteractions"
+          "com.gayasslily.immersive_interactions.ImmersiveInteractions"
 		],
 		"client": [
-			"com.immersive_interactions.ImmersiveInteractionsClient"
+          "com.gayasslily.immersive_interactions.ImmersiveInteractionsClient"
 		],
 		"fabric-datagen": [
-			"com.immersive_interactions.ImmersiveInteractionsDataGenerator"
+          "com.gayasslily.immersive_interactions.ImmersiveInteractionsDataGenerator"
 		]
 	},
 	"mixins": [

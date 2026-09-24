@@ -1,12 +1,11 @@
 {
   "required": true,
-  "package": "com.immersive_interactions.mixin",
+  "package": "com.gayasslily.immersive_interactions.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AbstractBlockMixin",
     "AbstractSignBlockMixin",
     "AxeItemMixin",
-    "BlockAccessor",
     "BoatEntityMixin",
     "ItemMixin",
     "MinecartEntityMixin",

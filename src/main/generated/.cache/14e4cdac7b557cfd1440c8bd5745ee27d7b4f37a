@@ -1,0 +1,7 @@
+// 1.21.1	2026-09-24T13:35:26.813861	Immersive Interactions/Tags for minecraft:item
+0b4e9eb2e57b7d0790ad2a0344733be5de39a297 data/immersive_interactions/tags/item/can_repair_brick.json
+635c8a7471659b74c23342d16f58d3195bacfc68 data/immersive_interactions/tags/item/can_apply_to_boat.json
+7e0c7fcd2ddc40b7d5b0c59070144efa448e2acf data/immersive_interactions/tags/item/can_apply_moss.json
+ce226c2e3a7fdde211cb0a38e4f78a8087a9fed9 data/immersive_interactions/tags/item/can_apply_bark.json
+3bb559f5bf9ebd2bfdf546f00589251cdaf6c207 data/immersive_interactions/tags/item/can_wax_copper.json
+635c8a7471659b74c23342d16f58d3195bacfc68 data/immersive_interactions/tags/item/can_apply_to_minecart.json

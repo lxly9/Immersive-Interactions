@@ -8,6 +8,7 @@
     "minecraft:mossy_stone_brick_stairs",
     "minecraft:mossy_stone_brick_slab",
     "minecraft:mossy_stone_brick_wall",
-    "minecraft:infested_mossy_stone_bricks"
+    "minecraft:infested_mossy_stone_bricks",
+    "clutternomore:mossy_stone_brick_step"
   ]
 }
